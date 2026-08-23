@@ -779,9 +779,11 @@
       z-index: 15;
       right: 24px;
       bottom: 24px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
       gap: 5px;
+      max-width: min(430px, calc(100vw - 36px));
       padding: 7px;
       border: 1px solid var(--line);
       border-radius: 9px;
@@ -801,10 +803,10 @@
       pointer-events: auto;
     }
 
-    .theme-button {
-      width: 34px;
+    .theme-button,
+    .theme-close {
       height: 28px;
-      padding: 0;
+      padding: 0 10px;
       border: 1px solid var(--line);
       border-radius: 5px;
       color: var(--muted);
@@ -813,12 +815,29 @@
       cursor: pointer;
       transition:
         border-color .2s ease,
-        color .2s ease;
+        color .2s ease,
+        background .2s ease,
+        transform .2s ease;
     }
 
-    .theme-button:hover {
+    .theme-button {
+      min-width: 34px;
+    }
+
+    .theme-button:hover,
+    .theme-close:hover {
       color: var(--text);
       border-color: var(--line-hover);
+      background: var(--surface-hover);
+    }
+
+    .theme-button:active,
+    .theme-close:active {
+      transform: scale(.96);
+    }
+
+    .theme-close {
+      color: var(--faint);
     }
 
 
@@ -1142,6 +1161,7 @@
       .theme-panel {
         right: 18px;
         bottom: 18px;
+        max-width: calc(100vw - 36px);
       }
 
       .game-modal {
@@ -1253,7 +1273,7 @@
           <h1>Games</h1>
 
           <p id="gameCount">
-            12 games
+            13 games
           </p>
 
         </div>
@@ -1576,6 +1596,14 @@
       RED
     </button>
 
+    <button
+      id="themeClose"
+      class="theme-close"
+      type="button"
+    >
+      CLOSE
+    </button>
+
   </div>
 
 
@@ -1583,9 +1611,9 @@
 
     /* ============================================================
        GAMES
-       
+
        ADDING A GAME:
-       
+
        {
          name: "Game Name",
          href: "game.html",
@@ -1675,13 +1703,13 @@
 
         mode: "Singleplayer",
         type: "Idle",
-        playtime: "1-50+ hrs",
+        playtime: "1–50+ hrs",
 
         intensity: 3,
         difficulty: 2,
         chaos: 2
       },
-      
+
       {
         name: "Flappy",
         href: "flappy.html",
@@ -1896,6 +1924,9 @@
 
     const themePanel =
       document.getElementById("themePanel");
+
+    const themeClose =
+      document.getElementById("themeClose");
 
     const randomButton =
       document.getElementById("randomButton");
@@ -2372,10 +2403,6 @@
       );
 
 
-      /* --------------------------------
-         VIBE BARS
-      -------------------------------- */
-
       const vibeData = [
         {
           name: "Intensity",
@@ -2453,14 +2480,6 @@
             );
 
 
-          /*
-            Small timeout lets the browser
-            render the bar at 0% first.
-
-            Then it smoothly grows to
-            its actual value.
-          */
-
           requestAnimationFrame(
             () => {
 
@@ -2479,10 +2498,6 @@
         }
       );
 
-
-      /* --------------------------------
-         TAGS
-      -------------------------------- */
 
       modalTags.innerHTML = "";
 
@@ -2777,10 +2792,12 @@
         theme
       );
 
-
-      themePanel.classList.remove(
-        "open"
-      );
+      /*
+        IMPORTANT:
+        The theme panel intentionally stays open here.
+        This lets you cycle through every theme without
+        reopening the panel after every click.
+      */
 
     }
 
@@ -3021,6 +3038,11 @@
     );
 
 
+    /*
+      Clicking a theme changes it but DOES NOT
+      close the panel anymore.
+    */
+
     themePanel.addEventListener(
       "click",
       event => {
@@ -3042,6 +3064,28 @@
       }
     );
 
+
+    /*
+      Dedicated close button.
+    */
+
+    themeClose.addEventListener(
+      "click",
+      () => {
+
+        themePanel.classList.remove(
+          "open"
+        );
+
+      }
+    );
+
+
+    /*
+      Clicking outside still closes it too.
+      The dedicated CLOSE button is there for
+      an explicit way to dismiss the panel.
+    */
 
     document.addEventListener(
       "click",
@@ -3099,6 +3143,21 @@
           ) {
 
             shortcuts.classList.remove(
+              "open"
+            );
+
+            return;
+
+          }
+
+
+          if (
+            themePanel.classList.contains(
+              "open"
+            )
+          ) {
+
+            themePanel.classList.remove(
               "open"
             );
 
