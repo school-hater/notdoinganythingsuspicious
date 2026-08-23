@@ -576,6 +576,15 @@
       color:var(--faint);
       font-size:10px
     }
+
+.launch-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#050608;opacity:0;pointer-events:none;transition:opacity .35s ease}.launch-overlay.open{opacity:1;pointer-events:auto}
+.launch-backdrop{position:absolute;inset:-20%;background:radial-gradient(circle at 50% 45%,var(--launch-color,#888) 0,transparent 34%),radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),transparent 55%);filter:blur(24px);opacity:.38;transform:scale(.7)}.launch-overlay.open .launch-backdrop{animation:launchBackdrop 1.5s cubic-bezier(.16,1,.3,1) forwards}
+.launch-ring{position:absolute;width:min(72vw,420px);aspect-ratio:1;border:1px solid color-mix(in srgb,var(--launch-color,#888) 45%,transparent);border-radius:50%;box-shadow:0 0 70px color-mix(in srgb,var(--launch-color,#888) 20%,transparent),inset 0 0 70px color-mix(in srgb,var(--launch-color,#888) 10%,transparent);transform:scale(.35) rotate(-25deg);opacity:0}.launch-overlay.open .launch-ring{animation:launchRing 1.1s cubic-bezier(.16,1,.3,1) .05s forwards}
+.launch-card{position:relative;width:min(420px,calc(100vw - 40px));padding:34px 28px;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(12,14,18,.72);backdrop-filter:blur(18px);box-shadow:0 30px 100px rgba(0,0,0,.55);transform:translateY(28px) scale(.92);opacity:0}.launch-overlay.open .launch-card{animation:launchCard .75s cubic-bezier(.16,1,.3,1) .08s forwards}
+.launch-kicker{color:var(--muted);font-size:9px;letter-spacing:.18em;text-transform:uppercase}.launch-name{margin:10px 0 7px;font-size:28px;font-weight:500;letter-spacing:-.8px;text-wrap:balance}.launch-status{color:var(--muted);font-size:11px}.launch-progress{height:3px;margin:24px 0 0;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.08)}.launch-progress span{display:block;width:0;height:100%;border-radius:inherit;background:var(--launch-color,#fff);box-shadow:0 0 18px var(--launch-color,#fff);animation:launchProgress 1.15s cubic-bezier(.22,1,.36,1) .18s forwards}
+.launch-dots{position:absolute;inset:0;pointer-events:none}.launch-dots i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--launch-color,#fff);box-shadow:0 0 12px var(--launch-color,#fff);opacity:0}.launch-overlay.open .launch-dots i{animation:launchParticle 1s ease-out forwards}.launch-dots i:nth-child(1){left:18%;top:36%;animation-delay:.12s}.launch-dots i:nth-child(2){left:76%;top:29%;animation-delay:.2s}.launch-dots i:nth-child(3){left:25%;top:68%;animation-delay:.27s}.launch-dots i:nth-child(4){left:82%;top:65%;animation-delay:.34s}.launch-dots i:nth-child(5){left:50%;top:17%;animation-delay:.18s}.launch-dots i:nth-child(6){left:52%;top:83%;animation-delay:.3s}
+.login-mark.secret-ready{border-color:var(--accent);box-shadow:0 0 25px var(--glow)}.login-mark.secret-spin{animation:secretSpin .8s cubic-bezier(.16,1,.3,1)}.secret-modal{z-index:3200}.secret-card{text-align:center;width:min(400px,100%)}.secret-symbol{width:58px;height:58px;margin:0 auto 20px;border:1px solid var(--line-hover);border-radius:50%;position:relative;animation:secretSymbol 2.4s linear infinite}.secret-symbol:before,.secret-symbol:after{content:"";position:absolute;inset:9px;border:1px solid var(--line);border-radius:50%}.secret-symbol:after{inset:25px;background:var(--accent);border:0;box-shadow:0 0 22px var(--accent)}.secret-text{color:var(--muted);font-size:11px;line-height:1.7}.secret-close{margin-top:22px;width:100%;height:38px;border:1px solid var(--line);border-radius:8px;background:var(--surface-hover);cursor:pointer;color:var(--text);font-size:10px}
+@keyframes launchBackdrop{0%{transform:scale(.7);opacity:0}35%{opacity:.5}100%{transform:scale(1.35);opacity:.34}}@keyframes launchRing{0%{transform:scale(.35) rotate(-25deg);opacity:0}45%{opacity:.85}100%{transform:scale(1.35) rotate(12deg);opacity:0}}@keyframes launchCard{0%{transform:translateY(28px) scale(.92);opacity:0}60%{transform:translateY(-3px) scale(1.015);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}@keyframes launchProgress{to{width:100%}}@keyframes launchParticle{0%{opacity:0;transform:scale(.2) translate(0,0)}25%{opacity:1}100%{opacity:0;transform:scale(1.5) translate(var(--dx,0),var(--dy,0))}}@keyframes secretSpin{0%{transform:rotate(0) scale(1)}45%{transform:rotate(180deg) scale(1.18)}100%{transform:rotate(360deg) scale(1)}}@keyframes secretSymbol{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{
       opacity:0;
       transform:translateY(10px)
@@ -710,7 +719,7 @@
 </div>
 </div>
 </div>
-<div id="shortcuts" class="shortcuts">
+<div id="launchOverlay" class="launch-overlay" aria-hidden="true"><div class="launch-backdrop"></div><div class="launch-ring"></div><div class="launch-dots"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="launch-card"><div class="launch-kicker">Launching</div><div id="launchName" class="launch-name">Game</div><div id="launchStatus" class="launch-status">Preparing...</div><div class="launch-progress"><span></span></div></div></div><div id="secretModal" class="modal secret-modal"><div class="modal-card secret-card"><div class="secret-symbol"></div><div class="modal-kicker">You found something</div><h2 class="modal-title">Okay... you weren't supposed to click that.</h2><p class="secret-text">The little circle has been watching. That's all you're getting for now.<br>Maybe there's more hidden around here.</p><button id="secretClose" class="secret-close">BACK TO THE GAMES</button></div></div><div id="shortcuts" class="shortcuts">
 <div class="shortcut-card">
 <h2>Keyboard shortcuts</h2>
 <div class="shortcut">
@@ -1060,7 +1069,7 @@ function filtered(){const q=search.value.trim().toLowerCase();return games.filte
     ============================================================ */
 
     function addRecent(g){recentGames=[g.name,...recentGames.filter(n=>n!==g.name)].slice(0,5);saveRecent()}
-function renderRecent(){const r=recentGames.map(n=>games.find(g=>g.name===n)).filter(Boolean),s=$("recent"),l=$("recentList");l.innerHTML="";if(!r.length){s.classList.add("hidden");return}s.classList.remove("hidden");r.forEach(g=>{const a=document.createElement("a");a.className="recent-item";a.href=g.href;a.textContent=g.name;a.onclick=()=>addRecent(g);l.appendChild(a)})}
+function renderRecent(){const r=recentGames.map(n=>games.find(g=>g.name===n)).filter(Boolean),s=$("recent"),l=$("recentList");l.innerHTML="";if(!r.length){s.classList.add("hidden");return}s.classList.remove("hidden");r.forEach(g=>{const a=document.createElement("a");a.className="recent-item";a.href=g.href;a.textContent=g.name;a.onclick=e=>{e.preventDefault();launchGame(g)};l.appendChild(a)})}
 
     /* ============================================================
        FUNCTION OPENGAMEMODAL
@@ -1079,7 +1088,7 @@ $("modalClose").onclick=()=>closeModal("gameModal");$("gameModal").onclick=e=>{i
       $("modalFavorite").textContent=favorites.has(selectedGame.name)?"★":"☆";
       $("modalFavorite").classList.toggle("active",favorites.has(selectedGame.name));
       renderGames()
-    };$("playButton").onclick=()=>{if(selectedGame){addRecent(selectedGame);location.href=selectedGame.href}}
+    };$("playButton").onclick=()=>{if(selectedGame)launchGame(selectedGame)}
 search.oninput=renderGames;
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{currentFilter=t.dataset.filter;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===t));renderGames()});
 $("randomButton").onclick=()=>{const a=filtered();if(a.length)openGameModal(a[Math.floor(Math.random()*a.length)])};
@@ -1106,9 +1115,12 @@ function startBored(){
  const timer=setInterval(()=>{$("pickerName").textContent=names[i%names.length];$("pickerStatus").textContent=["Reading the vibe...","Eliminating bad ideas...","Almost got it...","Locking it in..."][i%4];i++},300);
  setTimeout(()=>{clearInterval(timer);const g=result.choice.g;const maxScore=30;const pct=Math.max(55,Math.round(100-(result.choice.score/maxScore)*100));$("pickerName").textContent="YOUR GAME IS...";$("pickerStatus").textContent="The vibes have spoken.";const m=$("match");m.classList.remove("hidden");m.innerHTML=`<span class="match-score">${pct}% MATCH</span>
 <div class="match-name"></div>
-<div class="match-meta"></div>`;m.querySelector(".match-name").textContent=g.name;m.querySelector(".match-meta").textContent=g.genre+" · Intensity "+g.intensity+" · Difficulty "+g.difficulty+" · Chaos "+g.chaos;const old=$("picker").querySelector(".picker-action");if(old)old.remove();const btn=document.createElement("button");btn.className="primary bored-find picker-action";btn.textContent="PLAY "+g.name.toUpperCase();btn.onclick=()=>{addRecent(g);location.href=g.href};$("picker").appendChild(btn)},1900);
+<div class="match-meta"></div>`;m.querySelector(".match-name").textContent=g.name;m.querySelector(".match-meta").textContent=g.genre+" · Intensity "+g.intensity+" · Difficulty "+g.difficulty+" · Chaos "+g.chaos;const old=$("picker").querySelector(".picker-action");if(old)old.remove();const btn=document.createElement("button");btn.className="primary bored-find picker-action";btn.textContent="PLAY "+g.name.toUpperCase();btn.onclick=()=>launchGame(g);$("picker").appendChild(btn)},1900);
 }
 $("boredButton").onclick=()=>{$("boredSetup").classList.remove("hidden");$("picker").classList.add("hidden");$("picker").querySelector(".picker-action")?.remove();openModal("boredModal")};$("boredClose").onclick=()=>closeModal("boredModal");$("boredModal").onclick=e=>{if(e.target===$("boredModal"))closeModal("boredModal")};$("findGame").onclick=startBored;
+
+function launchGame(g){addRecent(g);$('launchName').textContent=g.name;$('launchStatus').textContent='Loading your escape route...';$('launchOverlay').style.setProperty('--launch-color',g.color||'#888');const bar=$('launchOverlay').querySelector('.launch-progress span');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='launchProgress 1.15s cubic-bezier(.22,1,.36,1) .18s forwards';$('launchOverlay').classList.add('open');document.body.classList.add('modal-open');setTimeout(()=>{location.href=g.href},1350)}
+const secretLogo=document.querySelector('.login-mark');let secretClicks=0,secretTimer=null;secretLogo.addEventListener('click',()=>{secretClicks++;secretLogo.classList.add('secret-spin');setTimeout(()=>secretLogo.classList.remove('secret-spin'),800);clearTimeout(secretTimer);secretTimer=setTimeout(()=>{secretClicks=0;secretLogo.classList.remove('secret-ready')},1800);if(secretClicks>=5){secretClicks=0;secretLogo.classList.add('secret-ready');setTimeout(()=>{openModal('secretModal');secretLogo.classList.remove('secret-ready')},250)}});$('secretClose').onclick=()=>closeModal('secretModal');$('secretModal').onclick=e=>{if(e.target===$('secretModal'))closeModal('secretModal')};
 
     /* ============================================================
        DOCUMENT.ADDEVENTLISTENER
