@@ -1043,12 +1043,12 @@ function filtered(){const q=search.value.trim().toLowerCase();return games.filte
        FUNCTION RENDERGAMES
     ============================================================ */
 
-    function renderGames(){const list=filtered();gamesBox.innerHTML="";if(!list.length){gamesBox.innerHTML='<div class="empty">'+(currentFilter==="favorites"?"No favorites yet.":"No games found.")+"</div>"}else list.forEach((g,i)=>{const c=document.createElement("div");c.className="game";c.dataset.pattern=g.pattern;c.style.setProperty("--game-color",g.color);c.style.setProperty("--game-amount",g.amount);c.style.animationDelay=Math.min(i*.035,.35)+"s";c.innerHTML='<span class="game-open-hint">OPEN →</span>
-<button class="star '+(favorites.has(g.name)?"active":"")+'">'+(favorites.has(g.name)?"★":"☆")+'</button>
+    function renderGames(){const list=filtered();gamesBox.innerHTML="";if(!list.length){gamesBox.innerHTML='<div class="empty">'+(currentFilter==="favorites"?"No favorites yet.":"No games found.")+"</div>"}else list.forEach((g,i)=>{const c=document.createElement("div");c.className="game";c.dataset.pattern=g.pattern;c.style.setProperty("--game-color",g.color);c.style.setProperty("--game-amount",g.amount);c.style.animationDelay=Math.min(i*.035,.35)+"s";c.innerHTML=`<span class="game-open-hint">OPEN →</span>
+<button class="star ${favorites.has(g.name) ? "active" : ""}">${favorites.has(g.name) ? "★" : "☆"}</button>
 <div class="game-info">
 <span class="game-name"></span>
 <span class="game-meta"></span>
-</div>';c.querySelector(".game-name").textContent=g.name;c.querySelector(".game-meta").textContent=g.genre;c.onclick=e=>{if(!e.target.closest(".star"))openGameModal(g)};c.querySelector(".star").onclick=e=>{
+</div>`;c.querySelector(".game-name").textContent=g.name;c.querySelector(".game-meta").textContent=g.genre;c.onclick=e=>{if(!e.target.closest(".star"))openGameModal(g)};c.querySelector(".star").onclick=e=>{
       e.stopPropagation();
       favorites.has(g.name)?favorites.delete(g.name):favorites.add(g.name);
       saveFav();
