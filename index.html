@@ -474,6 +474,23 @@
       background:var(--surface-hover);
       color:var(--text)
     }
+html[data-theme="synthwave"] body{background:linear-gradient(rgba(255,0,128,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.035) 1px,transparent 1px),radial-gradient(ellipse at 50% 110%,rgba(255,0,153,.20),transparent 48%),radial-gradient(ellipse at 50% -20%,rgba(0,229,255,.12),transparent 45%),var(--bg);background-size:36px 36px,36px 36px,auto,auto,auto}
+html[data-theme="synthwave"] .game:hover{box-shadow:0 0 0 1px rgba(255,0,153,.22),0 16px 45px rgba(255,0,153,.14)}
+html[data-theme="terminal"] body{background:repeating-linear-gradient(0deg,rgba(80,255,130,.025) 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% 0,rgba(80,255,130,.08),transparent 45%),var(--bg)}
+html[data-theme="terminal"] .game{border-radius:2px;box-shadow:inset 0 0 24px rgba(80,255,130,.025)}
+html[data-theme="terminal"] .game-name,html[data-theme="terminal"] .heading h1,html[data-theme="terminal"] .login h1{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em}
+html[data-theme="mono"] body{background:repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 1px,transparent 1px 8px),#050505}
+html[data-theme="mono"] .game{filter:grayscale(1)}
+html[data-theme="mono"] .game:hover{filter:grayscale(1) contrast(1.12)}
+html[data-theme="glass"] body{background:radial-gradient(circle at 15% 20%,rgba(100,140,255,.12),transparent 30%),radial-gradient(circle at 85% 75%,rgba(255,80,180,.10),transparent 32%),#080a10}
+html[data-theme="glass"] .game,html[data-theme="glass"] .modal-card,html[data-theme="glass"] .shortcut-card{background:rgba(20,24,34,.42);backdrop-filter:blur(18px) saturate(1.2);border-color:rgba(255,255,255,.12)}
+html[data-theme="blueprint"] body{background:linear-gradient(rgba(75,150,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(75,150,255,.045) 1px,transparent 1px),#07111c;background-size:24px 24px}
+html[data-theme="blueprint"] .game{border-radius:3px}
+html[data-theme="sunset"] body{background:radial-gradient(ellipse at 50% 105%,rgba(255,80,70,.16),transparent 42%),radial-gradient(ellipse at 25% 0,rgba(255,190,70,.13),transparent 38%),radial-gradient(ellipse at 85% 25%,rgba(170,70,255,.10),transparent 35%),#120b16}
+html[data-theme="sunset"] .game:hover{box-shadow:0 18px 45px rgba(255,100,80,.12)}
+html[data-theme="crt"] body{background:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 50%,rgba(80,255,100,.05),transparent 65%),#050706}
+html[data-theme="crt"] .game,html[data-theme="crt"] .modal-card{border-radius:4px;box-shadow:inset 0 0 35px rgba(80,255,100,.035),0 10px 30px rgba(0,0,0,.25)}
+
 .shortcut-card{
       width:min(360px,100%);
       padding:24px
@@ -666,6 +683,13 @@
 <button class="theme-button" data-theme="ember">RED</button>
 <button class="theme-button" data-theme="forest">GRN</button>
 <button class="theme-button" data-theme="highcontrast">HC</button>
+<button class="theme-button" data-theme="synthwave">SYN</button>
+<button class="theme-button" data-theme="terminal">TERM</button>
+<button class="theme-button" data-theme="mono">MONO</button>
+<button class="theme-button" data-theme="glass">GLASS</button>
+<button class="theme-button" data-theme="blueprint">BLUE</button>
+<button class="theme-button" data-theme="sunset">SUN</button>
+<button class="theme-button" data-theme="crt">CRT</button>
 </div>
 <div id="gameModal" class="modal">
 <div class="modal-card">
@@ -1035,7 +1059,14 @@ midnight:{bg:"#090a0c",
         faint:"#ccc",
         accent:"#ff0",
         accentText:"#000",
-        glow:"rgba(255,255,0,.15)"}
+        glow:"rgba(255,255,0,.15)"},
+        synthwave:{bg:"#090516",surface:"#130b24",surfaceHover:"#1b1030",line:"#34205a",lineHover:"#61389a",text:"#f5eaff",muted:"#ad91c7",faint:"#76598f",accent:"#ff4fb3",accentText:"#170718",glow:"rgba(255,79,179,.18)"},
+        terminal:{bg:"#020805",surface:"#07120a",surfaceHover:"#0b1c10",line:"#12351d",lineHover:"#1e6632",text:"#b8ffc9",muted:"#63b77a",faint:"#39714a",accent:"#66ff8c",accentText:"#031007",glow:"rgba(102,255,140,.13)"},
+        mono:{bg:"#070707",surface:"#101010",surfaceHover:"#181818",line:"#292929",lineHover:"#4a4a4a",text:"#f1f1f1",muted:"#a0a0a0",faint:"#666",accent:"#fff",accentText:"#000",glow:"rgba(255,255,255,.08)"},
+        glass:{bg:"#080a10",surface:"#151a25",surfaceHover:"#20283a",line:"#313b50",lineHover:"#53637e",text:"#edf2ff",muted:"#91a0bc",faint:"#5f6d86",accent:"#b9c9ff",accentText:"#090c14",glow:"rgba(130,155,255,.14)"},
+        blueprint:{bg:"#07111c",surface:"#0b1b2b",surfaceHover:"#0e253b",line:"#17405e",lineHover:"#2b6b96",text:"#d9efff",muted:"#78a9c7",faint:"#4e7590",accent:"#70c8ff",accentText:"#04101a",glow:"rgba(65,170,255,.13)"},
+        sunset:{bg:"#120b16",surface:"#1b1020",surfaceHover:"#28152a",line:"#43233e",lineHover:"#704064",text:"#fff0ed",muted:"#bd8f91",faint:"#795d68",accent:"#ffb18a",accentText:"#1a0c0a",glow:"rgba(255,115,90,.15)"},
+        crt:{bg:"#050706",surface:"#0a100c",surfaceHover:"#0e1811",line:"#1b3020",lineHover:"#315538",text:"#d6ffdd",muted:"#82b58a",faint:"#527258",accent:"#9cffab",accentText:"#061008",glow:"rgba(80,255,100,.10)"}
 };
 
     /* ============================================================
@@ -1048,7 +1079,7 @@ midnight:{bg:"#090a0c",
        SETTHEME(
     ============================================================ */
 
-    setTheme(name){const t=themes[name]||themes.midnight,r=document.documentElement;Object.entries(t).forEach(([k,v])=>r.style.setProperty("--"+k.replace("surfaceHover","surface-hover").replace("lineHover","line-hover").replace("accentText","accent-text"),v));localStorage.setItem("gameTheme",name);document.querySelectorAll(".theme-button").forEach(b=>b.classList.toggle("active",b.dataset.theme===name))}
+    setTheme(name){const t=themes[name]||themes.midnight,r=document.documentElement;Object.entries(t).forEach(([k,v])=>r.style.setProperty("--"+k.replace("surfaceHover","surface-hover").replace("lineHover","line-hover").replace("accentText","accent-text"),v));r.dataset.theme=name;localStorage.setItem("gameTheme",name);document.querySelectorAll(".theme-button").forEach(b=>b.classList.toggle("active",b.dataset.theme===name))}
 
     /* ============================================================
        FUNCTION SHOWHUB
