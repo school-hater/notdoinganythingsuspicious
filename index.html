@@ -347,7 +347,10 @@
     }.modal.open,.shortcuts.open{
       opacity:1;
       pointer-events:auto
-    }.modal-card,.shortcut-card{
+    }.modal-card,
+.secret-list-modal{z-index:3100}.secret-list-card{width:min(620px,100%);max-height:min(78vh,720px);overflow:auto}.secret-list-sub{margin:5px 0 18px;color:var(--muted);font-size:11px}.secret-progress{margin:0 0 18px}.secret-progress>span{display:block;margin-bottom:7px;color:var(--faint);font-size:9px;letter-spacing:.08em;text-transform:uppercase}.secret-progress-track{height:4px;border-radius:999px;overflow:hidden;background:var(--line)}.secret-progress-track>div{width:0;height:100%;border-radius:inherit;background:var(--accent);box-shadow:0 0 14px var(--accent);transition:width .45s cubic-bezier(.22,1,.36,1)}.secret-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.secret-entry{padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);transition:.2s}.secret-entry.unlocked{border-color:var(--line-hover);background:var(--surface-hover)}.secret-entry:hover{transform:translateY(-1px);border-color:var(--line-hover)}.secret-entry-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.secret-entry-name{font-size:11px;font-weight:500}.secret-entry-diff{color:var(--faint);font-size:8px;letter-spacing:.1em;text-transform:uppercase}.secret-entry-hint{margin-top:6px;color:var(--muted);font-size:9px;line-height:1.55}.secret-entry-status{margin-top:9px;color:var(--faint);font-size:8px}.secret-entry.unlocked .secret-entry-status{color:var(--accent)}.secret-badge{font-size:8px}@media(max-width:560px){.secret-list{grid-template-columns:1fr}}
+
+.shortcut-card{
       width:min(470px,100%);
       position:relative;
       overflow:hidden;
@@ -474,23 +477,6 @@
       background:var(--surface-hover);
       color:var(--text)
     }
-html[data-theme="synthwave"] body{background:linear-gradient(rgba(255,0,128,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.035) 1px,transparent 1px),radial-gradient(ellipse at 50% 110%,rgba(255,0,153,.20),transparent 48%),radial-gradient(ellipse at 50% -20%,rgba(0,229,255,.12),transparent 45%),var(--bg);background-size:36px 36px,36px 36px,auto,auto,auto}
-html[data-theme="synthwave"] .game:hover{box-shadow:0 0 0 1px rgba(255,0,153,.22),0 16px 45px rgba(255,0,153,.14)}
-html[data-theme="terminal"] body{background:repeating-linear-gradient(0deg,rgba(80,255,130,.025) 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% 0,rgba(80,255,130,.08),transparent 45%),var(--bg)}
-html[data-theme="terminal"] .game{border-radius:2px;box-shadow:inset 0 0 24px rgba(80,255,130,.025)}
-html[data-theme="terminal"] .game-name,html[data-theme="terminal"] .heading h1,html[data-theme="terminal"] .login h1{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.03em}
-html[data-theme="mono"] body{background:repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 1px,transparent 1px 8px),#050505}
-html[data-theme="mono"] .game{filter:grayscale(1)}
-html[data-theme="mono"] .game:hover{filter:grayscale(1) contrast(1.12)}
-html[data-theme="glass"] body{background:radial-gradient(circle at 15% 20%,rgba(100,140,255,.12),transparent 30%),radial-gradient(circle at 85% 75%,rgba(255,80,180,.10),transparent 32%),#080a10}
-html[data-theme="glass"] .game,html[data-theme="glass"] .modal-card,html[data-theme="glass"] .shortcut-card{background:rgba(20,24,34,.42);backdrop-filter:blur(18px) saturate(1.2);border-color:rgba(255,255,255,.12)}
-html[data-theme="blueprint"] body{background:linear-gradient(rgba(75,150,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(75,150,255,.045) 1px,transparent 1px),#07111c;background-size:24px 24px}
-html[data-theme="blueprint"] .game{border-radius:3px}
-html[data-theme="sunset"] body{background:radial-gradient(ellipse at 50% 105%,rgba(255,80,70,.16),transparent 42%),radial-gradient(ellipse at 25% 0,rgba(255,190,70,.13),transparent 38%),radial-gradient(ellipse at 85% 25%,rgba(170,70,255,.10),transparent 35%),#120b16}
-html[data-theme="sunset"] .game:hover{box-shadow:0 18px 45px rgba(255,100,80,.12)}
-html[data-theme="crt"] body{background:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 50%,rgba(80,255,100,.05),transparent 65%),#050706}
-html[data-theme="crt"] .game,html[data-theme="crt"] .modal-card{border-radius:4px;box-shadow:inset 0 0 35px rgba(80,255,100,.035),0 10px 30px rgba(0,0,0,.25)}
-
 .shortcut-card{
       width:min(360px,100%);
       padding:24px
@@ -666,6 +652,7 @@ html[data-theme="crt"] .game,html[data-theme="crt"] .modal-card{border-radius:4p
 <div class="tabs">
 <button class="tab active" data-filter="all">All Games</button>
 <button class="tab" data-filter="favorites">Favorites</button>
+<button class="tab" id="secretsButton">Secrets</button>
 </div>
 <span id="gameCount" class="count"></span>
 </div>
@@ -683,13 +670,6 @@ html[data-theme="crt"] .game,html[data-theme="crt"] .modal-card{border-radius:4p
 <button class="theme-button" data-theme="ember">RED</button>
 <button class="theme-button" data-theme="forest">GRN</button>
 <button class="theme-button" data-theme="highcontrast">HC</button>
-<button class="theme-button" data-theme="synthwave">SYN</button>
-<button class="theme-button" data-theme="terminal">TERM</button>
-<button class="theme-button" data-theme="mono">MONO</button>
-<button class="theme-button" data-theme="glass">GLASS</button>
-<button class="theme-button" data-theme="blueprint">BLUE</button>
-<button class="theme-button" data-theme="sunset">SUN</button>
-<button class="theme-button" data-theme="crt">CRT</button>
 </div>
 <div id="gameModal" class="modal">
 <div class="modal-card">
@@ -743,7 +723,16 @@ html[data-theme="crt"] .game,html[data-theme="crt"] .modal-card{border-radius:4p
 </div>
 </div>
 </div>
-<div id="launchOverlay" class="launch-overlay" aria-hidden="true"><div class="launch-backdrop"></div><div class="launch-ring"></div><div class="launch-dots"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="launch-card"><div class="launch-kicker">Launching</div><div id="launchName" class="launch-name">Game</div><div id="launchStatus" class="launch-status">Preparing...</div><div class="launch-progress"><span></span></div></div></div><div id="secretModal" class="modal secret-modal"><div class="modal-card secret-card"><div class="secret-symbol"></div><div class="modal-kicker">You found something</div><h2 class="modal-title">Okay... you weren't supposed to click that.</h2><p class="secret-text">The little circle has been watching. That's all you're getting for now.<br>Maybe there's more hidden around here.</p><button id="secretClose" class="secret-close">BACK TO THE GAMES</button></div></div><div id="shortcuts" class="shortcuts">
+<div id="launchOverlay" class="launch-overlay" aria-hidden="true"><div class="launch-backdrop"></div><div class="launch-ring"></div><div class="launch-dots"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="launch-card"><div class="launch-kicker">Launching</div><div id="launchName" class="launch-name">Game</div><div id="launchStatus" class="launch-status">Preparing...</div><div class="launch-progress"><span></span></div></div></div><div id="secretModal" class="modal secret-modal"><div class="modal-card secret-card"><div class="secret-symbol"></div><div class="modal-kicker">You found something</div><h2 class="modal-title">Okay... you weren't supposed to click that.</h2><p class="secret-text">The little circle has been watching. That's all you're getting for now.<br>Maybe there's more hidden around here.</p><button id="secretClose" class="secret-close">BACK TO THE GAMES</button></div></div><div id="secretsModal" class="modal secret-list-modal">
+<div class="modal-card secret-list-card">
+<button id="secretsClose" class="modal-close">×</button>
+<div class="modal-kicker">Hidden in plain sight</div>
+<h2 class="modal-title">Secrets</h2>
+<p class="secret-list-sub">Find the little things hiding around the library. Hints are intentionally vague.</p>
+<div class="secret-progress"><span id="secretProgressText">0 / 15 unlocked</span><div class="secret-progress-track"><div id="secretProgressFill"></div></div></div>
+<div id="secretList" class="secret-list"></div>
+</div></div>
+<div id="secretFoundModal" class="modal secret-modal"><div class="modal-card secret-card"><div class="secret-symbol"></div><div class="modal-kicker">Secret unlocked</div><h2 id="secretFoundTitle" class="modal-title">Secret</h2><p id="secretFoundText" class="secret-text">Unlocked.</p><button id="secretFoundClose" class="secret-close">NICE</button></div></div><div id="shortcuts" class="shortcuts">
 <div class="shortcut-card">
 <h2>Keyboard shortcuts</h2>
 <div class="shortcut">
@@ -1059,27 +1048,18 @@ midnight:{bg:"#090a0c",
         faint:"#ccc",
         accent:"#ff0",
         accentText:"#000",
-        glow:"rgba(255,255,0,.15)"},
-        synthwave:{bg:"#090516",surface:"#130b24",surfaceHover:"#1b1030",line:"#34205a",lineHover:"#61389a",text:"#f5eaff",muted:"#ad91c7",faint:"#76598f",accent:"#ff4fb3",accentText:"#170718",glow:"rgba(255,79,179,.18)"},
-        terminal:{bg:"#020805",surface:"#07120a",surfaceHover:"#0b1c10",line:"#12351d",lineHover:"#1e6632",text:"#b8ffc9",muted:"#63b77a",faint:"#39714a",accent:"#66ff8c",accentText:"#031007",glow:"rgba(102,255,140,.13)"},
-        mono:{bg:"#070707",surface:"#101010",surfaceHover:"#181818",line:"#292929",lineHover:"#4a4a4a",text:"#f1f1f1",muted:"#a0a0a0",faint:"#666",accent:"#fff",accentText:"#000",glow:"rgba(255,255,255,.08)"},
-        glass:{bg:"#080a10",surface:"#151a25",surfaceHover:"#20283a",line:"#313b50",lineHover:"#53637e",text:"#edf2ff",muted:"#91a0bc",faint:"#5f6d86",accent:"#b9c9ff",accentText:"#090c14",glow:"rgba(130,155,255,.14)"},
-        blueprint:{bg:"#07111c",surface:"#0b1b2b",surfaceHover:"#0e253b",line:"#17405e",lineHover:"#2b6b96",text:"#d9efff",muted:"#78a9c7",faint:"#4e7590",accent:"#70c8ff",accentText:"#04101a",glow:"rgba(65,170,255,.13)"},
-        sunset:{bg:"#120b16",surface:"#1b1020",surfaceHover:"#28152a",line:"#43233e",lineHover:"#704064",text:"#fff0ed",muted:"#bd8f91",faint:"#795d68",accent:"#ffb18a",accentText:"#1a0c0a",glow:"rgba(255,115,90,.15)"},
-        crt:{bg:"#050706",surface:"#0a100c",surfaceHover:"#0e1811",line:"#1b3020",lineHover:"#315538",text:"#d6ffdd",muted:"#82b58a",faint:"#527258",accent:"#9cffab",accentText:"#061008",glow:"rgba(80,255,100,.10)"}
+        glow:"rgba(255,255,0,.15)"}
 };
 
     /* ============================================================
        FUNCTION SETTHEME
     ============================================================ */
 
-    function
-
     /* ============================================================
-       SETTHEME(
+       FUNCTION SETTHEME
     ============================================================ */
 
-    setTheme(name){const t=themes[name]||themes.midnight,r=document.documentElement;Object.entries(t).forEach(([k,v])=>r.style.setProperty("--"+k.replace("surfaceHover","surface-hover").replace("lineHover","line-hover").replace("accentText","accent-text"),v));r.dataset.theme=name;localStorage.setItem("gameTheme",name);document.querySelectorAll(".theme-button").forEach(b=>b.classList.toggle("active",b.dataset.theme===name))}
+    function setTheme(name){const t=themes[name]||themes.midnight,r=document.documentElement;Object.entries(t).forEach(([k,v])=>r.style.setProperty("--"+k.replace("surfaceHover","surface-hover").replace("lineHover","line-hover").replace("accentText","accent-text"),v));localStorage.setItem("gameTheme",name);document.querySelectorAll(".theme-button").forEach(b=>b.classList.toggle("active",b.dataset.theme===name))}
 
     /* ============================================================
        FUNCTION SHOWHUB
@@ -1164,13 +1144,56 @@ function startBored(){
 $("boredButton").onclick=()=>{$("boredSetup").classList.remove("hidden");$("picker").classList.add("hidden");$("picker").querySelector(".picker-action")?.remove();openModal("boredModal")};$("boredClose").onclick=()=>closeModal("boredModal");$("boredModal").onclick=e=>{if(e.target===$("boredModal"))closeModal("boredModal")};$("findGame").onclick=startBored;
 
 function launchGame(g){addRecent(g);$('launchName').textContent=g.name;$('launchStatus').textContent='Loading your escape route...';$('launchOverlay').style.setProperty('--launch-color',g.color||'#888');const bar=$('launchOverlay').querySelector('.launch-progress span');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='launchProgress 1.15s cubic-bezier(.22,1,.36,1) .18s forwards';$('launchOverlay').classList.add('open');document.body.classList.add('modal-open');setTimeout(()=>{location.href=g.href},1350)}
-const secretLogo=document.querySelector('.login-mark');let secretClicks=0,secretTimer=null;secretLogo.addEventListener('click',()=>{secretClicks++;secretLogo.classList.add('secret-spin');setTimeout(()=>secretLogo.classList.remove('secret-spin'),800);clearTimeout(secretTimer);secretTimer=setTimeout(()=>{secretClicks=0;secretLogo.classList.remove('secret-ready')},1800);if(secretClicks>=5){secretClicks=0;secretLogo.classList.add('secret-ready');setTimeout(()=>{openModal('secretModal');secretLogo.classList.remove('secret-ready')},250)}});$('secretClose').onclick=()=>closeModal('secretModal');$('secretModal').onclick=e=>{if(e.target===$('secretModal'))closeModal('secretModal')};
+const SECRET_KEY="gameSecretsUnlocked";
+const secretState=new Set(JSON.parse(localStorage.getItem(SECRET_KEY)||"[]"));
+const secretDefs=[
+{id:"circle",name:"The Circle",difficulty:"Easy",hint:"Some doors have handles. This one has a ritual."},
+{id:"search",name:"Searchlight",difficulty:"Easy",hint:"The search bar is more curious than it looks."},
+{id:"favorites",name:"Collector",difficulty:"Easy",hint:"A few stars in the right places can make a pattern."},
+{id:"theme",name:"Mood Ring",difficulty:"Easy",hint:"Try treating the themes like pieces of a combination."},
+{id:"cookie",name:"Crumbs",difficulty:"Easy",hint:"One game in the library has a very patient personality."},
+{id:"keyboard",name:"Old Habits",difficulty:"Medium",hint:"The keyboard shortcuts page isn't the only place keys matter."},
+{id:"recent",name:"Memory Lane",difficulty:"Medium",hint:"The library remembers where you've been."},
+{id:"random",name:"Lucky Number",difficulty:"Medium",hint:"Randomness can become suspiciously specific."},
+{id:"bored",name:"Bad Advice",difficulty:"Medium",hint:"Sometimes the finder needs a very particular mood."},
+{id:"modal",name:"Look Closer",difficulty:"Medium",hint:"Open something you normally skim past."},
+{id:"theme-cycle",name:"Full Spectrum",difficulty:"Hard",hint:"A long walk through every mood leaves a trace."},
+{id:"favorites-five",name:"Five Stars",difficulty:"Hard",hint:"Five is a strangely important number around here."},
+{id:"games-order",name:"Shelf Logic",difficulty:"Hard",hint:"The shelf has an order. Maybe not the obvious one."},
+{id:"night-owl",name:"After Hours",difficulty:"Hard",hint:"The clock knows when you're here."},
+{id:"konami",name:"Classic",difficulty:"Expert",hint:"Some secrets are old enough to have survived every UI redesign."}
+];
+function saveSecrets(){localStorage.setItem(SECRET_KEY,JSON.stringify([...secretState]))}
+function unlockSecret(id){if(secretState.has(id))return false;const d=secretDefs.find(x=>x.id===id);if(!d)return false;secretState.add(id);saveSecrets();renderSecrets();showSecretFound(d);return true}
+function showSecretFound(d){$("secretFoundTitle").textContent=d.name;$("secretFoundText").textContent="Unlocked. Nice catch.";openModal("secretFoundModal")}
+function renderSecrets(){const list=$("secretList");if(!list)return;list.innerHTML=secretDefs.map((d,i)=>{const u=secretState.has(d.id);return `<div class="secret-entry ${u?"unlocked":""}"><div class="secret-entry-top"><span class="secret-entry-name">${u?d.name:"Secret "+String(i+1).padStart(2,"0")}</span><span class="secret-entry-diff">${d.difficulty}</span></div><div class="secret-entry-hint">${d.hint}</div><div class="secret-entry-status">${u?"✓ Unlocked":"○ Locked"}</div></div>`}).join("");const n=secretState.size;$("secretProgressText").textContent=`${n} / ${secretDefs.length} unlocked`;$("secretProgressFill").style.width=(n/secretDefs.length*100)+"%"}
+$("secretsButton").onclick=()=>{renderSecrets();openModal("secretsModal")};$("shortcutButton").addEventListener("click",()=>unlockSecret("keyboard"));$("secretsClose").onclick=()=>closeModal("secretsModal");$("secretFoundClose").onclick=()=>closeModal("secretFoundModal");$("secretFoundModal").onclick=e=>{if(e.target===$("secretFoundModal"))closeModal("secretFoundModal")};$("secretsModal").onclick=e=>{if(e.target===$("secretsModal"))closeModal("secretsModal")};
+
+// Existing circle secret, now wired into the tracker.
+const secretLogo=document.querySelector('.login-mark');let secretClicks=0,secretTimer=null;secretLogo.addEventListener('click',()=>{secretClicks++;secretLogo.classList.add('secret-spin');setTimeout(()=>secretLogo.classList.remove('secret-spin'),800);clearTimeout(secretTimer);secretTimer=setTimeout(()=>{secretClicks=0;secretLogo.classList.remove('secret-ready')},1800);if(secretClicks>=5){secretClicks=0;secretLogo.classList.add('secret-ready');setTimeout(()=>{unlockSecret('circle');secretLogo.classList.remove('secret-ready')},250)}});
+
+// Secret triggers are deliberately subtle; the tab only reveals hints, never the method.
+let searchSecretTimer=null;search.addEventListener('input',()=>{clearTimeout(searchSecretTimer);const q=search.value.trim().toLowerCase();if(q==="cookie"||q==="crumbs")unlockSecret('search');searchSecretTimer=setTimeout(()=>{if(q.length>=3&&q.includes("game"))unlockSecret('search')},500)});
+let favoriteSecretTimer=null;function checkFavoriteSecrets(){clearTimeout(favoriteSecretTimer);favoriteSecretTimer=setTimeout(()=>{if(favorites.size>=3)unlockSecret('favorites');if(favorites.size>=5)unlockSecret('favorites-five')},120)}
+const originalSaveFav=saveFav;saveFav=function(){originalSaveFav();checkFavoriteSecrets()};
+let themeTrail=[];function noteTheme(name){themeTrail=[...themeTrail,name].slice(-Object.keys(themes).length);if(new Set(themeTrail).size>=4)unlockSecret('theme');if(Object.keys(themes).every(k=>themeTrail.includes(k)))unlockSecret('theme-cycle')}
+const originalSetTheme=setTheme;setTheme=function(name){originalSetTheme(name);noteTheme(name)};
+const originalAddRecent=addRecent;addRecent=function(g){originalAddRecent(g);if(recentGames.length>=4)unlockSecret('recent');if(g.name==="Cookie Clicker")unlockSecret('cookie')};
+const originalOpenGameModal=openGameModal;openGameModal=function(g){originalOpenGameModal(g);if(g.name==="Cookie Clicker")unlockSecret('cookie');if(g.difficulty>=9)unlockSecret('modal')};
+let randomPicks=0;const originalRandomClick=$("randomButton").onclick;$('randomButton').onclick=()=>{randomPicks++;if(randomPicks>=7)unlockSecret('random');return originalRandomClick()};
+const originalStartBored=startBored;startBored=function(){if($('chaosSlider').value==="10"&&$('difficultySlider').value==="10"&&$('intensitySlider').value==="10")unlockSecret('bored');return originalStartBored()};
+let keyTrail=[];const secretSequence=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];document.addEventListener('keydown',e=>{keyTrail.push(e.key);keyTrail=keyTrail.slice(-secretSequence.length);if(secretSequence.every((k,i)=>k===keyTrail[i])){unlockSecret('konami');keyTrail=[]}});
+let allGamesViewed=[];gamesBox.addEventListener('click',e=>{const card=e.target.closest('.game');if(card){const name=card.querySelector('.game-name')?.textContent;if(name&&!allGamesViewed.includes(name)){allGamesViewed.push(name);if(allGamesViewed.length>=8)unlockSecret('games-order')}}});
+let modalVisits=0;document.addEventListener('click',e=>{if(e.target.closest('.modal-card')&&e.target.closest('#gameModal')){modalVisits++;if(modalVisits>=5)unlockSecret('modal')}});
+const hour=new Date().getHours();if(hour<6||hour>=23)unlockSecret('night-owl');
+renderSecrets();
+
 
     /* ============================================================
        DOCUMENT.ADDEVENTLISTENER
     ============================================================ */
 
-    document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal("gameModal");closeModal("boredModal");closeModal("shortcuts");$("themePanel").classList.add("hidden");if(document.activeElement===search){search.value="";renderGames()}}if(e.key==="/"&&document.activeElement!==password&&document.activeElement!==search){e.preventDefault();search.focus()}if(e.key.toLowerCase()==="r"&&document.activeElement.tagName!=="INPUT")$("randomButton").click();if(e.key==="?"&&document.activeElement.tagName!=="INPUT")$("shortcutButton").click();if(e.key.toLowerCase()==="l"&&document.activeElement.tagName!=="INPUT")$("logout").click()});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal("gameModal");closeModal("boredModal");closeModal("shortcuts");closeModal("secretsModal");closeModal("secretFoundModal");$("themePanel").classList.add("hidden");if(document.activeElement===search){search.value="";renderGames()}}if(e.key==="/"&&document.activeElement!==password&&document.activeElement!==search){e.preventDefault();search.focus()}if(e.key.toLowerCase()==="r"&&document.activeElement.tagName!=="INPUT")$("randomButton").click();if(e.key==="?"&&document.activeElement.tagName!=="INPUT")$("shortcutButton").click();if(e.key.toLowerCase()==="l"&&document.activeElement.tagName!=="INPUT")$("logout").click()});
 setTheme(localStorage.getItem("gameTheme")||"midnight");sessionStorage.getItem("gameHubUnlocked")==="1"?showHub():showLogin();
 </script>
 </body>
