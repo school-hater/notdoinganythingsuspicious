@@ -2895,6 +2895,14 @@ loginForm.onsubmit = e => {
    * Enter "unemployed"
    */
 
+  if(entered === "proxy"){
+
+    window.location.href = "https://nano-production-1b6d.up.railway.app/";
+
+    return;
+
+  }
+
   if(entered === SECRET_15_PASSWORD){
 
     openSecret15();
