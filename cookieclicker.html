@@ -321,5 +321,153 @@ Feel free to alter this code to your liking, but please do not re-host it, do no
 </div>
 
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bf37e3c0d41c1c8',t:'MTc2ODYyODE2Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-	</body>
+	
+<style>
+#jacobAutoClicker {
+  display:none; position:fixed; z-index:2147483647; top:80px; right:24px;
+  width:300px; padding:14px; background:#222; color:#eee; border:2px solid #777;
+  border-radius:8px; box-shadow:0 6px 25px rgba(0,0,0,.55); font:14px Arial,sans-serif;
+}
+#jacobAutoClicker h3 { margin:0 0 10px; font-size:17px; }
+#jacobAutoClicker button { margin:3px; padding:6px 9px; cursor:pointer; }
+#jacobAutoClicker input[type=number] { width:75px; }
+.jacobClickDot {
+  position:fixed; z-index:2147483646; width:30px; height:30px; border-radius:50%;
+  background:#d22; border:2px solid white; box-sizing:border-box; cursor:move;
+  display:none; user-select:none; touch-action:none;
+}
+.jacobClickDot span {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  color:white; font:bold 14px Arial,sans-serif; pointer-events:none;
+}
+#jacobAutoStatus { margin-top:8px; font-size:12px; color:#bbb; }
+</style>
+
+<div id="jacobAutoClicker">
+  <h3>Auto Clicker</h3>
+  <button id="jacobToggle">Resume</button>
+  <label>Interval (ms): <input id="jacobInterval" type="number" min="1" value="100"></label>
+  <div style="margin-top:8px">
+    <button data-add-dot="1">Add 1</button>
+    <button data-add-dot="2">Add 2</button>
+    <button data-add-dot="3">Add 3</button>
+  </div>
+  <div>
+    <button data-remove-dot="1">Remove 1</button>
+    <button data-remove-dot="2">Remove 2</button>
+    <button data-remove-dot="3">Remove 3</button>
+  </div>
+  <div id="jacobAutoStatus">Paused</div>
+</div>
+<div class="jacobClickDot" id="jacobDot1"><span>1</span></div>
+<div class="jacobClickDot" id="jacobDot2"><span>2</span></div>
+<div class="jacobClickDot" id="jacobDot3"><span>3</span></div>
+
+<script>
+(function () {
+  const panel = document.getElementById('jacobAutoClicker');
+  const toggle = document.getElementById('jacobToggle');
+  const intervalInput = document.getElementById('jacobInterval');
+  const status = document.getElementById('jacobAutoStatus');
+  const dots = [1,2,3].map(n => document.getElementById('jacobDot' + n));
+
+  let unlocked = false, running = false, timer = null, interval = 100;
+  let activeDots = [1];
+
+  function renderDots() {
+    dots.forEach((dot, i) => {
+      const n = i + 1;
+      dot.style.display = activeDots.includes(n) ? 'block' : 'none';
+    });
+  }
+
+  function setRunning(value) {
+    running = value;
+    if (timer) { clearInterval(timer); timer = null; }
+    if (running && activeDots.length) {
+      timer = setInterval(() => {
+        activeDots.slice().sort((a,b) => a-b).forEach(n => {
+          const dot = dots[n-1];
+          if (!dot || dot.style.display === 'none') return;
+          const x = parseFloat(dot.style.left) + dot.offsetWidth / 2;
+          const y = parseFloat(dot.style.top) + dot.offsetHeight / 2;
+          const target = document.elementFromPoint(x, y);
+          if (target) target.dispatchEvent(new MouseEvent('click', {
+            bubbles:true, cancelable:true, clientX:x, clientY:y, view:window
+          }));
+        });
+      }, interval);
+    }
+    toggle.textContent = running ? 'Pause' : 'Resume';
+    status.textContent = running ? 'Running' : 'Paused';
+  }
+
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    panel.style.display = 'block';
+    renderDots();
+  }
+
+  function codePrompt() {
+    const code = prompt('Enter secret code:');
+    if (code === '1857') unlock();
+  }
+
+  let keyBuffer = '';
+  document.addEventListener('keydown', function(e) {
+    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    keyBuffer = (keyBuffer + e.key.toLowerCase()).slice(-3);
+    if (keyBuffer === 'xyz') codePrompt();
+  });
+
+  toggle.addEventListener('click', () => setRunning(!running));
+
+  intervalInput.addEventListener('change', () => {
+    interval = Math.max(1, Number(intervalInput.value) || 100);
+    if (running) setRunning(true);
+  });
+
+  document.querySelectorAll('[data-add-dot]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = Number(btn.dataset.addDot);
+      if (!activeDots.includes(n)) activeDots.push(n);
+      activeDots.sort((a,b) => a-b);
+      renderDots();
+    });
+  });
+
+  document.querySelectorAll('[data-remove-dot]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = Number(btn.dataset.removeDot);
+      activeDots = activeDots.filter(x => x !== n);
+      if (!activeDots.length) setRunning(false);
+      renderDots();
+    });
+  });
+
+  dots.forEach((dot, i) => {
+    let dragging = false, ox = 0, oy = 0;
+    dot.style.left = (80 + i * 55) + 'px';
+    dot.style.top = '180px';
+
+    dot.addEventListener('pointerdown', e => {
+      dragging = true;
+      ox = e.clientX - dot.offsetLeft;
+      oy = e.clientY - dot.offsetTop;
+      dot.setPointerCapture(e.pointerId);
+    });
+    dot.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      dot.style.left = Math.max(0, e.clientX - ox) + 'px';
+      dot.style.top = Math.max(0, e.clientY - oy) + 'px';
+    });
+    dot.addEventListener('pointerup', () => { dragging = false; });
+  });
+
+  renderDots();
+})();
+</script>
+
+</body>
 </html>
