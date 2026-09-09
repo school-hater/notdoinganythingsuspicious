@@ -323,149 +323,282 @@ Feel free to alter this code to your liking, but please do not re-host it, do no
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9bf37e3c0d41c1c8',t:'MTc2ODYyODE2Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 	
 <style>
-#jacobAutoClicker {
-  display:none; position:fixed; z-index:2147483647; top:80px; right:24px;
-  width:300px; padding:14px; background:#222; color:#eee; border:2px solid #777;
-  border-radius:8px; box-shadow:0 6px 25px rgba(0,0,0,.55); font:14px Arial,sans-serif;
+#cookieAutomationHub {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 280px;
+  z-index: 2147483647;
+  background: rgba(40,26,13,.96);
+  color: #eee;
+  border: 3px solid #e1b463;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,.7);
+  font: 13px Arial,sans-serif;
+  user-select: none;
 }
-#jacobAutoClicker h3 { margin:0 0 10px; font-size:17px; }
-#jacobAutoClicker button { margin:3px; padding:6px 9px; cursor:pointer; }
-#jacobAutoClicker input[type=number] { width:75px; }
-.jacobClickDot {
-  position:fixed; z-index:2147483646; width:30px; height:30px; border-radius:50%;
-  background:#d22; border:2px solid white; box-sizing:border-box; cursor:move;
-  display:none; user-select:none; touch-action:none;
+#cookieAutomationHub .hubHeader {
+  padding: 10px;
+  background: rgba(25,15,5,.92);
+  border-bottom: 1px solid #e1b463;
+  color: #e1b463;
+  font-weight: bold;
+  cursor: move;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-.jacobClickDot span {
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  color:white; font:bold 14px Arial,sans-serif; pointer-events:none;
+#cookieAutomationHub button {
+  background:#333;
+  color:#fff;
+  border:1px solid #555;
+  padding:4px 7px;
+  cursor:pointer;
+  border-radius:3px;
 }
-#jacobAutoStatus { margin-top:8px; font-size:12px; color:#bbb; }
+#cookieAutomationHub .hubBody { padding:12px; }
+#cookieAutomationHub label {
+  display:flex;
+  align-items:center;
+  margin:5px 0;
+  cursor:pointer;
+}
+#cookieAutomationHub input { margin-right:8px; }
+#cookieAutomationHub .sectionTitle {
+  color:#e1b463;
+  font-weight:bold;
+  margin:9px 0 5px;
+}
+#cookieAutomationHub .scroll {
+  max-height:150px;
+  overflow-y:auto;
+  background:#111;
+  padding:6px;
+  border:1px solid #222;
+  border-radius:4px;
+}
+#cookieAutomationHub .hud {
+  background:#111;
+  padding:8px;
+  border:1px solid #222;
+  border-radius:4px;
+  line-height:1.6;
+}
+#cookieAutomationHub .status {
+  color:#aaa;
+  font-size:11px;
+  margin-top:7px;
+}
 </style>
 
-<div id="jacobAutoClicker">
-  <h3>Auto Clicker</h3>
-  <button id="jacobToggle">Resume</button>
-  <label>Interval (ms): <input id="jacobInterval" type="number" min="1" value="100"></label>
-  <div style="margin-top:8px">
-    <button data-add-dot="1">Add 1</button>
-    <button data-add-dot="2">Add 2</button>
-    <button data-add-dot="3">Add 3</button>
+<div id="cookieAutomationHub">
+  <div class="hubHeader" id="cookieHubHeader">
+    <span>COOKIE HUB</span>
+    <button id="cookieHubCollapse">−</button>
   </div>
-  <div>
-    <button data-remove-dot="1">Remove 1</button>
-    <button data-remove-dot="2">Remove 2</button>
-    <button data-remove-dot="3">Remove 3</button>
+  <div class="hubBody" id="cookieHubBody">
+    <label><input type="checkbox" id="hubBigCookie"> Auto Big Cookie</label>
+    <label><input type="checkbox" id="hubGoldenCookie"> Auto Golden Cookies</label>
+    <label><input type="checkbox" id="hubUpgrades"> Auto One-Time Upgrades</label>
+
+    <div class="sectionTitle">Auto-Buy Buildings</div>
+    <div class="scroll" id="hubBuildings"></div>
+
+    <div class="sectionTitle">Dynamic Info HUD</div>
+    <div class="hud">
+      Bank Wallet: <b id="hubBank">0</b><br>
+      Wrinkler Vault: <span id="hubWrinklers">0</span><br>
+      True Wealth: <b id="hubNetWorth">0</b>
+    </div>
+
+    <div class="sectionTitle">Grimoire Auto-Spammer</div>
+    <button id="hubMagicToggle">Hide</button>
+    <div class="scroll" id="hubMagicMenu"></div>
+    <div class="status" id="hubStatus">Waiting for Cookie Clicker...</div>
   </div>
-  <div id="jacobAutoStatus">Paused</div>
 </div>
-<div class="jacobClickDot" id="jacobDot1"><span>1</span></div>
-<div class="jacobClickDot" id="jacobDot2"><span>2</span></div>
-<div class="jacobClickDot" id="jacobDot3"><span>3</span></div>
 
 <script>
 (function () {
-  const panel = document.getElementById('jacobAutoClicker');
-  const toggle = document.getElementById('jacobToggle');
-  const intervalInput = document.getElementById('jacobInterval');
-  const status = document.getElementById('jacobAutoStatus');
-  const dots = [1,2,3].map(n => document.getElementById('jacobDot' + n));
+  'use strict';
 
-  let unlocked = false, running = false, timer = null, interval = 100;
-  let activeDots = [1];
+  let minigame = null;
+  let activeSpell = null;
+  let collapsed = false;
 
-  function renderDots() {
-    dots.forEach((dot, i) => {
-      const n = i + 1;
-      dot.style.display = activeDots.includes(n) ? 'block' : 'none';
-    });
+  const hub = document.getElementById('cookieAutomationHub');
+  const body = document.getElementById('cookieHubBody');
+  const collapse = document.getElementById('cookieHubCollapse');
+  const header = document.getElementById('cookieHubHeader');
+  const status = document.getElementById('hubStatus');
+  const buildings = document.getElementById('hubBuildings');
+  const magicMenu = document.getElementById('hubMagicMenu');
+
+  function ready() {
+    return typeof Game !== 'undefined' &&
+           Game.ready &&
+           Game.Objects &&
+           Game.ObjectsById &&
+           Game.Objects['Wizard tower'];
   }
 
-  function setRunning(value) {
-    running = value;
-    if (timer) { clearInterval(timer); timer = null; }
-    if (running && activeDots.length) {
-      timer = setInterval(() => {
-        activeDots.slice().sort((a,b) => a-b).forEach(n => {
-          const dot = dots[n-1];
-          if (!dot || dot.style.display === 'none') return;
-          const x = parseFloat(dot.style.left) + dot.offsetWidth / 2;
-          const y = parseFloat(dot.style.top) + dot.offsetHeight / 2;
-          const target = document.elementFromPoint(x, y);
-          if (target) target.dispatchEvent(new MouseEvent('click', {
-            bubbles:true, cancelable:true, clientX:x, clientY:y, view:window
-          }));
-        });
-      }, interval);
+  function setup() {
+    if (!ready()) return false;
+
+    minigame = Game.Objects['Wizard tower'].minigame || null;
+
+    // Populate building checkboxes once.
+    if (!buildings.children.length) {
+      Game.ObjectsById.forEach(function (obj) {
+        const label = document.createElement('label');
+        label.innerHTML =
+          '<input type="checkbox" class="hubBuilding" data-id="' + obj.id + '">' +
+          document.createTextNode(' ' + obj.name).textContent;
+        buildings.appendChild(label);
+      });
     }
-    toggle.textContent = running ? 'Pause' : 'Resume';
-    status.textContent = running ? 'Running' : 'Paused';
+
+    // Populate spell radios once the Grimoire exists.
+    if (minigame && minigame.spellsById && !magicMenu.children.length) {
+      const off = document.createElement('label');
+      off.innerHTML =
+        '<input type="radio" name="hubSpell" value="none" checked>' +
+        '<span style="color:#ff6666;font-weight:bold">[ Disabled ]</span>';
+      magicMenu.appendChild(off);
+
+      for (let i in minigame.spellsById) {
+        const spell = minigame.spellsById[i];
+        const label = document.createElement('label');
+        label.innerHTML =
+          '<input type="radio" name="hubSpell" value="' + spell.id + '">' +
+          '<span>' + spell.name + '</span>';
+        magicMenu.appendChild(label);
+      }
+
+      magicMenu.addEventListener('change', function (e) {
+        if (!e.target.matches('input[name="hubSpell"]')) return;
+
+        if (e.target.value === 'none') {
+          activeSpell = null;
+          if (typeof Game.Popup === 'function') Game.Popup('Grimoire Spammer: Disabled');
+        } else {
+          activeSpell = minigame.spellsById[e.target.value] || null;
+          if (activeSpell && typeof Game.Popup === 'function') {
+            Game.Popup('Spamming: ' + activeSpell.name);
+          }
+        }
+      });
+    }
+
+    status.textContent = 'Ready';
+    return true;
   }
 
-  function unlock() {
-    if (unlocked) return;
-    unlocked = true;
-    panel.style.display = 'block';
-    renderDots();
-  }
-
-  function codePrompt() {
-    const code = prompt('Enter secret code:');
-    if (code === '1857') unlock();
-  }
-
-  let keyBuffer = '';
-  document.addEventListener('keydown', function(e) {
-    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
-    keyBuffer = (keyBuffer + e.key.toLowerCase()).slice(-3);
-    if (keyBuffer === 'xyz') codePrompt();
+  // Collapse/expand.
+  collapse.addEventListener('click', function (e) {
+    e.stopPropagation();
+    collapsed = !collapsed;
+    body.style.display = collapsed ? 'none' : 'block';
+    collapse.textContent = collapsed ? '+' : '−';
+    hub.style.width = collapsed ? '180px' : '280px';
   });
 
-  toggle.addEventListener('click', () => setRunning(!running));
+  // Drag the hub by its header.
+  let dragging = false, offsetX = 0, offsetY = 0;
 
-  intervalInput.addEventListener('change', () => {
-    interval = Math.max(1, Number(intervalInput.value) || 100);
-    if (running) setRunning(true);
+  header.addEventListener('pointerdown', function (e) {
+    if (e.target === collapse) return;
+    dragging = true;
+    const rect = hub.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    header.setPointerCapture(e.pointerId);
   });
 
-  document.querySelectorAll('[data-add-dot]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const n = Number(btn.dataset.addDot);
-      if (!activeDots.includes(n)) activeDots.push(n);
-      activeDots.sort((a,b) => a-b);
-      renderDots();
+  header.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    const x = Math.max(0, Math.min(window.innerWidth - hub.offsetWidth, e.clientX - offsetX));
+    const y = Math.max(0, Math.min(window.innerHeight - hub.offsetHeight, e.clientY - offsetY));
+    hub.style.left = x + 'px';
+    hub.style.top = y + 'px';
+    hub.style.right = 'auto';
+    hub.style.bottom = 'auto';
+  });
+
+  header.addEventListener('pointerup', function () {
+    dragging = false;
+  });
+
+  // Main automation loop.
+  setInterval(function () {
+    if (!setup()) return;
+
+    // Big cookie.
+    if (document.getElementById('hubBigCookie').checked) {
+      Game.ClickCookie();
+    }
+
+    // Golden cookies.
+    if (document.getElementById('hubGoldenCookie').checked && Game.shimmers) {
+      Game.shimmers.forEach(function (shimmer) {
+        if (shimmer.type === 'golden') shimmer.pop();
+      });
+    }
+
+    // Buy the first affordable normal upgrade.
+    if (document.getElementById('hubUpgrades').checked && Game.UpgradesInStore) {
+      for (let i in Game.UpgradesInStore) {
+        const upgrade = Game.UpgradesInStore[i];
+        if (upgrade.pool !== 'toggle' &&
+            upgrade.pool !== 'tech' &&
+            typeof upgrade.getPrice === 'function' &&
+            Game.cookies >= upgrade.getPrice()) {
+          upgrade.buy();
+          break;
+        }
+      }
+    }
+
+    // Buy selected buildings.
+    document.querySelectorAll('.hubBuilding:checked').forEach(function (cb) {
+      const building = Game.ObjectsById[parseInt(cb.dataset.id, 10)];
+      if (building && Game.cookies >= building.getPrice()) {
+        building.buy(1);
+      }
     });
-  });
 
-  document.querySelectorAll('[data-remove-dot]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const n = Number(btn.dataset.removeDot);
-      activeDots = activeDots.filter(x => x !== n);
-      if (!activeDots.length) setRunning(false);
-      renderDots();
-    });
-  });
+    // Grimoire spell spammer.
+    if (activeSpell && minigame && typeof minigame.castSpell === 'function') {
+      try {
+        minigame.castSpell(activeSpell);
+      } catch (e) {
+        // The game can temporarily reject a cast while its minigame state changes.
+      }
+    }
 
-  dots.forEach((dot, i) => {
-    let dragging = false, ox = 0, oy = 0;
-    dot.style.left = (80 + i * 55) + 'px';
-    dot.style.top = '180px';
+    // Wealth HUD.
+    const visibleCookies = Game.cookies;
+    let wrinklerSavings = 0;
 
-    dot.addEventListener('pointerdown', e => {
-      dragging = true;
-      ox = e.clientX - dot.offsetLeft;
-      oy = e.clientY - dot.offsetTop;
-      dot.setPointerCapture(e.pointerId);
-    });
-    dot.addEventListener('pointermove', e => {
-      if (!dragging) return;
-      dot.style.left = Math.max(0, e.clientX - ox) + 'px';
-      dot.style.top = Math.max(0, e.clientY - oy) + 'px';
-    });
-    dot.addEventListener('pointerup', () => { dragging = false; });
-  });
+    if (Game.wrinklers) {
+      wrinklerSavings =
+        Game.wrinklers.reduce(function (total, w) {
+          return total + (w.sucked || 0);
+        }, 0) * 1.1 *
+        (typeof Game.eff === 'function' ? Game.eff('wrinklerGains') : 1);
+    }
 
-  renderDots();
+    const netWorth = visibleCookies + wrinklerSavings;
+
+    document.getElementById('hubBank').textContent =
+      typeof Beautify === 'function' ? Beautify(visibleCookies) : Math.floor(visibleCookies);
+
+    document.getElementById('hubWrinklers').textContent =
+      typeof Beautify === 'function' ? Beautify(wrinklerSavings) : Math.floor(wrinklerSavings);
+
+    document.getElementById('hubNetWorth').textContent =
+      typeof Beautify === 'function' ? Beautify(netWorth) : Math.floor(netWorth);
+  }, 100);
 })();
 </script>
 
