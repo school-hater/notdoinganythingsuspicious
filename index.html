@@ -2170,6 +2170,198 @@ html[data-theme="nova"] .login h1{
   }
 
 }
+
+/* ============================================================
+   SEARCH GLITCH (QUERY trigger)
+============================================================ */
+
+.search.nova-glitch{
+  border-color:#ff5a5a!important;
+  box-shadow:0 0 0 4px rgba(255,90,90,.22)!important;
+  color:#ff8a8a;
+  animation:novaGlitchShake .07s linear infinite;
+}
+
+@keyframes novaGlitchShake{
+  0%{ transform:translateX(0); }
+  25%{ transform:translateX(-1.5px); }
+  75%{ transform:translateX(1.5px); }
+  100%{ transform:translateX(0); }
+}
+
+/* ============================================================
+   CUSTOM CURSORS (unlocked after beating QUERY)
+============================================================ */
+
+html.nova-cursor-on,
+html.nova-cursor-on *{
+  cursor:none!important;
+}
+
+.ncur{
+  position:fixed;
+  top:0;
+  left:0;
+  width:0;
+  height:0;
+  pointer-events:none;
+  z-index:3500;
+  transform:translate(-50%,-50%);
+}
+
+.ncur-dot:before{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 10px var(--accent);
+  transform:translate(-5px,-5px);
+}
+
+.ncur-ring:before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  transform:translate(-11px,-11px);
+}
+
+.ncur-cross:before,
+.ncur-cross:after{
+  content:"";
+  position:absolute;
+  background:var(--accent);
+}
+
+.ncur-cross:before{
+  width:18px;
+  height:2px;
+  transform:translate(-9px,-1px);
+}
+
+.ncur-cross:after{
+  width:2px;
+  height:18px;
+  transform:translate(-1px,-9px);
+}
+
+.ncur-comet:before{
+  content:"";
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 12px var(--accent);
+  transform:translate(-4px,-4px);
+}
+
+.ncur-trail{
+  position:fixed;
+  top:0;
+  left:0;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:.5;
+  pointer-events:none;
+  z-index:3499;
+  transform:translate(-50%,-50%);
+  transition:opacity .4s ease, transform .4s ease;
+}
+
+.ncur-pixel:before{
+  content:"";
+  position:absolute;
+  width:0;
+  height:0;
+  border-style:solid;
+  border-width:0 0 16px 12px;
+  border-color:transparent transparent var(--accent) transparent;
+  filter:drop-shadow(0 0 2px #000);
+}
+
+/* ============================================================
+   QUERY THEME (reward) · animated
+============================================================ */
+
+html[data-theme="query"] body{
+  background:transparent;
+}
+
+html[data-theme="query"] body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, rgba(120,255,180,.035) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse at 50% -10%, rgba(120,255,180,.10), transparent 45%),
+    #05070a;
+}
+
+html[data-theme="query"] body:after{
+  content:"";
+  position:fixed;
+  inset:-20%;
+  z-index:-1;
+  pointer-events:none;
+  mix-blend-mode:screen;
+  background:
+    radial-gradient(35% 30% at 20% 20%, rgba(120,255,180,.16), transparent 70%),
+    radial-gradient(35% 30% at 80% 80%, rgba(110,190,255,.14), transparent 70%);
+}
+
+html[data-theme="query"] .heading h1,
+html[data-theme="query"] .login h1{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.02em;
+  color:#9dffc0;
+}
+
+html[data-theme="query"] .heading h1:after{
+  content:"▍";
+  margin-left:4px;
+  opacity:1;
+}
+
+html[data-theme="query"] .game:hover{
+  border-color:rgba(120,255,180,.5);
+  box-shadow:
+    0 18px 45px rgba(120,255,180,.16),
+    0 0 0 1px rgba(120,255,180,.3);
+}
+
+html[data-theme="query"] input:focus{
+  border-color:rgba(120,255,180,.6);
+  box-shadow:0 0 0 4px rgba(120,255,180,.12);
+}
+
+@keyframes qBlink{
+  50%{ opacity:0; }
+}
+
+@media (prefers-reduced-motion:no-preference){
+
+  html[data-theme="query"] body:before{
+    animation:novaTwinkle 4s ease-in-out infinite alternate;
+  }
+
+  html[data-theme="query"] body:after{
+    animation:novaAurora 24s ease-in-out infinite alternate;
+  }
+
+  html[data-theme="query"] .heading h1:after{
+    animation:qBlink 1s steps(1) infinite;
+  }
+
+}
 </style>
 </head>
 
@@ -4612,28 +4804,28 @@ if(
 <script>
 
 /* ============================================================
-   SECRET BOSS · NOVA
+   SECRET BOSSES · NOVA + QUERY
    ------------------------------------------------------------
-   How to trigger it:
+   NOVA:
      • type  star  (or  nova)  as the password
      • or click the "Game Library" title 7 times fast
 
-   How it plays:
-     • your cursor is the heart, it auto-fires at the star
-     • hold click / Shift = focus (slow, tight shots, more damage)
+   QUERY (unlocked after beating Nova once):
+     • type  searchbar  into the search box
+
+   Shared controls:
+     • your cursor is the heart, it auto-fires and now tracks
+       your pointer with zero lag/smoothing
+     • hold click / Shift = focus (smaller hitbox, more damage,
+       very slightly slower fire rate)
      • Space or B = bomb (3 per run) · Esc = pause · M = mute
      • touch: drag to move, tap with a 2nd finger to bomb
      • right after the intro, pick 1 of 3 random ability cards
-       (press 1/2/3 or click) — each has an upside and a downside
      • you heal 2 hearts at every phase change (unless your
        ability says otherwise)
 
-   How it uses the menu:
-     • game cards turn into turrets (they glow, then fire)
-     • the search bar fires a sweeping laser with a gap to slip through
-     • the whole page changes theme every phase and shakes when you get hit
-     • Nova talks through the "Pick something..." subtitle
-     • beat it to unlock the animated NOVA theme
+   Beating QUERY unlocks a second theme and a custom-cursor
+   picker (cursors never appear inside a boss fight).
 ============================================================ */
 
 (() => {
@@ -4644,6 +4836,7 @@ const TAU = Math.PI * 2;
 const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 const rand = (a,b) => a + Math.random()*(b-a);
 const pick = a => a[Math.floor(Math.random()*a.length)];
+const easeOut = k => 1 - Math.pow(1 - clamp(k,0,1),3);
 
 const store = {
   get(k,d){
@@ -4660,7 +4853,8 @@ const store = {
 /* ---------- constants ---------- */
 
 const FONT = '-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif';
-const MAXHP = 950;
+const MONO = 'ui-monospace,SFMono-Regular,Menlo,monospace';
+const MAXHP_BY_KIND = { nova:1400, query:1250 };
 const BASE_R = 3.6;
 
 const C = {
@@ -4672,6 +4866,8 @@ const C = {
   violet:"#b394ff",
   green:"#6dffa8"
 };
+
+/* ----- Nova's palette / dialogue ----- */
 
 const PH_RGB = [
   [255,215,106],
@@ -4719,7 +4915,66 @@ const T_BOMB = [
   "Bombs? Bold."
 ];
 
-/* ---------- abilities ---------- */
+/* ----- QUERY's palette / dialogue ----- */
+
+const QUERY_RGB = [
+  [110,190,255],
+  [255,196,92],
+  [255,96,96],
+  [110,255,160]
+];
+
+const QUERY_NAME  = ["Typing...","Searching...","0 results found","Ctrl+F"];
+const QUERY_THEME = ["terminal","glass","highcontrast","synthwave"];
+
+const T_START_Q = [
+  "Did you mean: certain death?",
+  "Autocomplete this.",
+  "Query received. Processing pain.",
+  "0 results for 'mercy'."
+];
+
+const T_PHASE_Q = [
+  null,
+  "Refining your search.",
+  "Try different keywords.",
+  "Indexing your weaknesses.",
+  "Compiling the final answer."
+];
+
+const T_HURT_Q = [
+  "Syntax error.",
+  "That's a 404.",
+  "Cache miss.",
+  "Not found.",
+  "Ctrl+Z that.",
+  "Typo detected."
+];
+
+const T_HURT_LOW_Q = [
+  "Last result on the page.",
+  "One more query and you're deleted."
+];
+
+const T_BOMB_Q = [
+  "Clever query.",
+  "That's cheating the algorithm.",
+  "Rate limited."
+];
+
+/* ----- pick the active boss's dialogue/palette ----- */
+
+function curRGB(){ return bossKind === "nova" ? PH_RGB : QUERY_RGB; }
+function curNAME(){ return bossKind === "nova" ? PH_NAME : QUERY_NAME; }
+function curTHEME(){ return bossKind === "nova" ? PH_THEME : QUERY_THEME; }
+function curStart(){ return bossKind === "nova" ? T_START : T_START_Q; }
+function curPhaseText(){ return bossKind === "nova" ? T_PHASE : T_PHASE_Q; }
+function curHurt(){ return bossKind === "nova" ? T_HURT : T_HURT_Q; }
+function curHurtLow(){ return bossKind === "nova" ? T_HURT_LOW : T_HURT_LOW_Q; }
+function curBomb(){ return bossKind === "nova" ? T_BOMB : T_BOMB_Q; }
+function bossDisplayName(){ return bossKind === "nova" ? "Nova" : "QUERY"; }
+
+/* ---------- abilities (shared by both bosses) ---------- */
 
 const ABILITIES = [
   {
@@ -4727,7 +4982,7 @@ const ABILITIES = [
     name:"Guided Light",
     tag:"Bullets · Rhythm",
     color:C.gold,
-    up:"10s: your shots lock on and chase the star.",
+    up:"10s: your shots lock on and chase the boss.",
     down:"Next 10s: shots fly straight and deal half damage."
   },
   {
@@ -4767,12 +5022,12 @@ const ABILITIES = [
     name:"Vengeance",
     tag:"Risk · Reward",
     color:C.pink,
-    up:"Getting hit fires a damaging burst back at the star.",
+    up:"Getting hit fires a damaging burst back at the boss.",
     down:"You only have 4 hearts total."
   }
 ];
 
-/* ---------- reward theme ---------- */
+/* ---------- reward themes ---------- */
 
 themes.nova = {
   bg:"#0b0a14",
@@ -4788,6 +5043,20 @@ themes.nova = {
   glow:"rgba(255,215,106,.16)"
 };
 
+themes.query = {
+  bg:"#05070a",
+  surface:"#0c1216",
+  surfaceHover:"#121b20",
+  line:"#1e2f2a",
+  lineHover:"#3a5c50",
+  text:"#d8ffe8",
+  muted:"#7fae95",
+  faint:"#4f6f60",
+  accent:"#6dffa8",
+  accentText:"#03110a",
+  glow:"rgba(109,255,168,.14)"
+};
+
 function addNovaButton(){
 
   if(document.querySelector('.theme-button[data-theme="nova"]')) return;
@@ -4801,11 +5070,23 @@ function addNovaButton(){
 
 }
 
-if(store.get("novaBeaten",false)){
-  addNovaButton();
+function addQueryThemeButton(){
+
+  if(document.querySelector('.theme-button[data-theme="query"]')) return;
+
+  const b = document.createElement("button");
+  b.className = "theme-button";
+  b.dataset.theme = "query";
+  b.textContent = "QRY";
+  b.onclick = () => setTheme("query");
+  $("themePanel").appendChild(b);
+
 }
 
-/* re-apply saved theme now that "nova" exists */
+if(store.get("novaBeaten",false)) addNovaButton();
+if(store.get("queryBeaten",false)) addQueryThemeButton();
+
+/* re-apply saved theme now that "nova"/"query" exist */
 setTheme(localStorage.getItem("gameTheme") || "midnight");
 
 /* temporary theme (does NOT overwrite the saved theme) */
@@ -4828,7 +5109,7 @@ function applyThemeTemp(name){
 
 }
 
-/* ---------- nova theme cursor sparks (runs whenever theme=nova, outside the fight too) ---------- */
+/* ---------- nova theme cursor sparks (ambient flourish, unrelated to the custom-cursor feature) ---------- */
 
 (function novaCursorTrail(){
 
@@ -4862,6 +5143,132 @@ function applyThemeTemp(name){
   },{ passive:true });
 
 })();
+
+/* ---------- custom cursors (unlocked after beating QUERY) ---------- */
+
+const CURSOR_STYLES = [
+  { id:"system", name:"System" },
+  { id:"dot",    name:"Dot" },
+  { id:"ring",   name:"Ring" },
+  { id:"cross",  name:"Crosshair" },
+  { id:"comet",  name:"Comet" },
+  { id:"pixel",  name:"Pixel Arrow" }
+];
+
+const cursorPanel = document.createElement("div");
+cursorPanel.id = "cursorPanel";
+cursorPanel.className = "theme-panel hidden";
+cursorPanel.style.bottom = "64px";
+document.body.appendChild(cursorPanel);
+
+let cursorEl = null;
+
+function buildCursorPanel(){
+
+  cursorPanel.innerHTML = "";
+
+  const current = localStorage.getItem("novaCursor") || "system";
+
+  CURSOR_STYLES.forEach(cs => {
+
+    const btn = document.createElement("button");
+
+    btn.className = "theme-button" + (cs.id === current ? " active" : "");
+    btn.textContent = cs.name;
+    btn.onclick = () => setCursorStyle(cs.id);
+
+    cursorPanel.appendChild(btn);
+
+  });
+
+}
+
+function setCursorStyle(id){
+
+  localStorage.setItem("novaCursor",id);
+
+  [...cursorPanel.children].forEach((btn,i) =>
+    btn.classList.toggle("active",CURSOR_STYLES[i].id === id)
+  );
+
+  applyCursorStyle();
+
+}
+
+function applyCursorStyle(){
+
+  const id = localStorage.getItem("novaCursor") || "system";
+
+  if(cursorEl){
+    cursorEl.remove();
+    cursorEl = null;
+  }
+
+  document.documentElement.classList.remove("nova-cursor-on");
+
+  if(id === "system") return;
+
+  document.documentElement.classList.add("nova-cursor-on");
+
+  cursorEl = document.createElement("div");
+  cursorEl.id = "novaCustomCursor";
+  cursorEl.className = "ncur ncur-" + id;
+
+  document.body.appendChild(cursorEl);
+
+  syncCursorVisibility();
+
+}
+
+function syncCursorVisibility(){
+  if(cursorEl) cursorEl.style.display = active ? "none" : "";
+}
+
+window.addEventListener("pointermove",e => {
+
+  if(!cursorEl || active) return;
+
+  cursorEl.style.left = e.clientX + "px";
+  cursorEl.style.top = e.clientY + "px";
+
+  if(localStorage.getItem("novaCursor") === "comet" && Math.random() < .55){
+
+    const s = document.createElement("div");
+
+    s.className = "ncur-trail";
+    s.style.left = e.clientX + "px";
+    s.style.top = e.clientY + "px";
+
+    document.body.appendChild(s);
+
+    setTimeout(() => s.remove(),380);
+
+  }
+
+},{ passive:true });
+
+function addCursorButtonIfUnlocked(){
+
+  if(!store.get("queryBeaten",false)) return;
+  if(document.getElementById("cursorToggle")) return;
+
+  const b = document.createElement("button");
+
+  b.className = "action";
+  b.id = "cursorToggle";
+  b.textContent = "Cursors";
+  b.onclick = () => cursorPanel.classList.toggle("hidden");
+
+  const lock = $("logout");
+
+  lock.parentNode.insertBefore(b,lock);
+
+  buildCursorPanel();
+  applyCursorStyle();
+
+}
+
+addCursorButtonIfUnlocked();
 
 /* ---------- audio (tiny synth, no files) ---------- */
 
@@ -5006,7 +5413,7 @@ function choosePick(id){
 
   boss.inv = false;
   setMode("fight");
-  say(pick(T_START),3.6);
+  say(pick(curStart()),3.6);
 
   beep(600,.12,"triangle",.05);
 
@@ -5054,9 +5461,10 @@ function applyAbility(id){
 
 /* ---------- state ---------- */
 
+let bossKind = "nova";    // "nova" | "query"
 let active = false;
 let paused = false;
-let mode = "idle";        // intro | picking | fight | trans | dying | won | lost
+let mode = "idle";        // intro | picking | fight | trans | cinematic | dying | won | lost
 let raf = 0;
 let lastT = 0;
 
@@ -5084,6 +5492,7 @@ let hpShow = 0;
 let lastPct = -1;
 let cardT = 0;
 let needNear = false;
+let needClear = false;
 
 let caption = { t:0, text:"" };
 let banner  = { t:0, a:"", b:"" };
@@ -5161,6 +5570,12 @@ function jiggle(){
     );
   }catch(e){}
 
+}
+
+/* current hitbox radius (focus shrinks it; shield doubles the base) */
+
+function hitR(){
+  return pl.r * (pl.focus ? .55 : 1);
 }
 
 /* ---------- healing (respects abilities) ---------- */
@@ -5291,7 +5706,11 @@ function shoot(x,y,ang,sp,o){
     c:o.c || "#fff",
     acc:(o.acc || 0) * U,
     max:(o.max || 0) * U,
-    turn:o.turn || 0
+    turn:o.turn || 0,
+    wig:o.wig || 0,
+    wf:o.wf || 5,
+    wp:o.wp || 0,
+    ch:o.ch
   });
 
 }
@@ -5396,8 +5815,6 @@ function fireCards(n,kind,tele){
 
   }else{
 
-    /* no cards on screen (empty favorites, etc.) → sky turrets */
-
     for(let i = 0; i < n; i++){
 
       turrets.push({
@@ -5455,9 +5872,98 @@ function fireTurret(t){
 
 }
 
+/* ---------- QUERY-only attack helpers ---------- */
+
+function ghostText(){
+
+  const a = aim(boss.x,boss.y);
+  const offs = [-.16,0,.16];
+  const col = rgba(QUERY_RGB[boss.phase],1);
+
+  offs.forEach(o => fx.push({ k:"g", x:boss.x, y:boss.y, ang:a + o, l:.55, m:.55, c:col }));
+
+  later(.55,() => offs.forEach(o => shoot(boss.x,boss.y,a + o,330,{ r:5,c:col })));
+
+  beep(500,.08,"triangle",.02);
+
+}
+
+function noResults(){
+
+  whiteA = Math.max(whiteA,.85);
+
+  say("No results found.",1.4);
+
+  const col = rgba(QUERY_RGB[boss.phase],1);
+
+  later(.5,() => ring(boss.x,boss.y,24,200,rand(0,TAU),{ r:5,c:col }));
+
+  beep(160,.3,"triangle",.04,-60);
+
+}
+
+function ctrlF(){
+
+  const pool = [];
+
+  document.querySelectorAll("#games .game-name").forEach(el => {
+    if(el.textContent) pool.push({ el, text:el.textContent });
+  });
+
+  if(elTitle && elTitle.textContent) pool.push({ el:elTitle, text:elTitle.textContent });
+
+  pool.push({ el:search, text:"Search games" });
+
+  if(!pool.length) return;
+
+  const choice = pick(pool);
+
+  let x = W / 2, y = H * .2;
+
+  if(choice.el && choice.el.getBoundingClientRect){
+
+    const r = choice.el.getBoundingClientRect();
+
+    if(r.width > 0){
+      x = r.left + r.width / 2;
+      y = r.top + r.height / 2;
+    }
+
+  }
+
+  if(choice.el && choice.el.classList){
+
+    choice.el.classList.add("nova-charge");
+    setTimeout(() => choice.el.classList.remove("nova-charge"),450);
+
+  }
+
+  const col = rgba(QUERY_RGB[boss.phase],1);
+
+  choice.text.split("").forEach(ch => {
+
+    if(ch === " ") return;
+
+    shoot(x + rand(-14,14),y + rand(-6,6),rand(0,TAU),rand(150,240),{ r:9,c:col,ch });
+
+  });
+
+  say('Found: "' + choice.text + '"',1.8);
+
+  beep(300,.1,"square",.03,150);
+
+}
+
 /* ---------- boss attacks ---------- */
 
 function attacks(dt){
+
+  if(bossKind === "nova") novaAttacks(dt);
+  else queryAttacks(dt);
+
+}
+
+function novaAttacks(dt){
 
   const b = boss;
   const ph = b.phase;
@@ -5593,7 +6099,108 @@ function attacks(dt){
 
 }
 
-/* ---------- boss dash ---------- */
+function queryAttacks(dt){
+
+  const b = boss;
+  const ph = b.phase;
+
+  if(b.weakpointMode){
+
+    updateWeakpoint(dt);
+
+    tick("wpHazard",dt,1.6,() => shoot(rand(40,W - 40),-10,Math.PI / 2,220,{ r:5,c:rgba(QUERY_RGB[3],1) }));
+
+    return;
+
+  }
+
+  if(ph === 3 && !b.scriptedStarted && b.hp <= b.max * .15){
+
+    startCinematic();
+    return;
+
+  }
+
+  if(ph === 0){
+
+    if(!b.dash){
+
+      tick("qrain",dt,.35,() => {
+        const ch = pick("abcdefghijklmnopqrstuvwxyz".split(""));
+        shoot(rand(30,W - 30),-10,Math.PI / 2,rand(160,240),{ r:7,c:rgba(QUERY_RGB[0],1),ch });
+      });
+
+      tick("qfan",dt,1.9,() => {
+        const a = aim(b.x,b.y);
+        for(let i = -2; i <= 2; i++){
+          shoot(b.x,b.y,a + i * .22,240,{ r:6,c:rgba(QUERY_RGB[0],1) });
+        }
+        beep(650,.05,"triangle",.02);
+      });
+
+    }
+
+  }
+
+  else if(ph === 1){
+
+    if(!b.dash){
+
+      tick("qghost",dt,2.6,ghostText);
+      tick("qsweep",dt,9,sweep,4);
+
+    }
+
+    tick("qcards",dt,3.2,() => fireCards(2,"fan",.9));
+
+  }
+
+  else if(ph === 2){
+
+    if(!b.dash){
+
+      tick("qzigzag",dt,.4,() => {
+        shoot(b.x,b.y,aim(b.x,b.y) + rand(-.3,.3),210,{
+          r:5,c:rgba(QUERY_RGB[2],1),wig:1.8,wf:6,wp:rand(0,6)
+        });
+      });
+
+      tick("qnoresults",dt,6,noResults,4);
+      tick("qdash",dt,7.5,startDash,4.5);
+
+    }
+
+    tick("qcards2",dt,2.6,() => fireCards(3,"ring",.85));
+
+  }
+
+  else{
+
+    if(!b.dash){
+
+      tick("qctrlf",dt,2.6,ctrlF);
+
+      tick("qzigzag2",dt,.28,() => {
+        const a = aim(b.x,b.y);
+        for(let i = -1; i <= 1; i++){
+          shoot(b.x,b.y,a + i * .18,260,{
+            r:5,c:rgba(QUERY_RGB[3],1),wig:2.4,wf:7,wp:rand(0,6)
+          });
+        }
+      });
+
+      tick("qbeam",dt,3.4,() => vBeam());
+
+    }
+
+    tick("qcards3",dt,2.1,() => fireCards(3,"fan",.75));
+    tick("qdash2",dt,6.5,startDash,4);
+
+  }
+
+}
+
+/* ---------- boss dash (shared) ---------- */
 
 function startDash(){
 
@@ -5702,8 +6309,7 @@ function updateBoss(dt){
 
   if(mode === "intro"){
 
-    const k = clamp(modeT / 2.2,0,1);
-    const e = 1 - Math.pow(1 - k,3);
+    const e = easeOut(modeT / 2.2);
 
     b.x = W / 2;
     b.y = -160 + (b.hy + 160) * e;
@@ -5712,10 +6318,14 @@ function updateBoss(dt){
 
   }
 
+  if(mode === "cinematic") return;
+
   if(mode === "dying"){
 
-    b.x += rand(-2.5,2.5);
-    b.y += rand(-2.5,2.5);
+    if(!b.weakpointMode){
+      b.x += rand(-2.5,2.5);
+      b.y += rand(-2.5,2.5);
+    }
 
     return;
 
@@ -5730,6 +6340,8 @@ function updateBoss(dt){
     return;
 
   }
+
+  if(b.weakpointMode) return;
 
   b.wander -= dt;
 
@@ -5785,22 +6397,22 @@ function nextPhase(){
 
   healPlayer(2);
 
-  applyThemeTemp(PH_THEME[boss.phase]);
+  applyThemeTemp(curTHEME()[boss.phase]);
 
   banner = {
     t:2.4,
     a:"Phase " + ROMAN[boss.phase],
-    b:PH_NAME[boss.phase]
+    b:curNAME()[boss.phase]
   };
 
-  say(T_PHASE[boss.phase],3.4);
+  say(curPhaseText()[boss.phase],3.4);
 
   shake = 18;
   whiteA = .6;
 
-  ringFx(boss.x,boss.y,rgba(PH_RGB[boss.phase],1),700,1);
+  ringFx(boss.x,boss.y,rgba(curRGB()[boss.phase],1),700,1);
 
-  burst(boss.x,boss.y,50,rgba(PH_RGB[boss.phase],1),320,1);
+  burst(boss.x,boss.y,50,rgba(curRGB()[boss.phase],1),320,1);
 
   jiggle();
 
@@ -5825,7 +6437,7 @@ function killBoss(){
 
   setMode("dying");
 
-  say("...fine. Take the star.",4);
+  say(bossKind === "nova" ? "...fine. Take the star." : "...fine. Take the... whatever this is.",4);
 
   beep(300,1.4,"sawtooth",.05,-260);
 
@@ -5842,7 +6454,7 @@ function dyingUpdate(dt){
     const x = boss.x + rand(-boss.R,boss.R);
     const y = boss.y + rand(-boss.R,boss.R);
 
-    burst(x,y,12,rgba(PH_RGB[rand(0,4) | 0],1),260,.8,3);
+    burst(x,y,12,rgba(curRGB()[rand(0,4) | 0],1),260,.8,3);
 
     shake = 10;
 
@@ -5853,6 +6465,7 @@ function dyingUpdate(dt){
   if(modeT > 3.2){
 
     boss.gone = true;
+    boss.blackout = false;
 
     burst(boss.x,boss.y,160,C.gold,520,1.6,3);
     ringFx(boss.x,boss.y,"rgba(255,215,106,1)",900,1.4);
@@ -5861,17 +6474,24 @@ function dyingUpdate(dt){
 
     setMode("won");
 
-    const first = !store.get("novaBeaten",false);
+    const key = bossKind + "Beaten";
+    const first = !store.get(key,false);
 
-    store.set("novaBeaten",true);
+    store.set(key,true);
 
-    const best = store.get("novaBest",0);
+    const bestKey = bossKind + "Best";
+    const best = store.get(bestKey,0);
 
-    if(!best || time < best) store.set("novaBest",Math.round(time));
+    if(!best || time < best) store.set(bestKey,Math.round(time));
 
     boss.first = first;
 
-    addNovaButton();
+    if(bossKind === "nova"){
+      addNovaButton();
+    }else{
+      addQueryThemeButton();
+      addCursorButtonIfUnlocked();
+    }
 
     [523,659,784,1047].forEach((f,i) =>
       setTimeout(() => beep(f,.35,"triangle",.05),i * 130)
@@ -5881,13 +6501,92 @@ function dyingUpdate(dt){
 
 }
 
+/* ---------- QUERY finale: devtools + black hole + weak point ---------- */
+
+function startCinematic(){
+
+  boss.scriptedStarted = true;
+  boss.dash = null;
+
+  clearBullets(true);
+
+  lasers.forEach(l => l.el && l.el.classList.remove("nova-charge","nova-fire"));
+  lasers.length = 0;
+
+  releaseEls();
+
+  queue.length = 0;
+  T = {};
+
+  boss.hidden = true;
+  boss.vortexSpawned = false;
+
+  boss.cineCmd = pick([
+    "games.forEach(g => g.delete())",
+    "document.title = 'goodbye'",
+    "reality.exit(1)",
+    "localStorage.clear() // oops"
+  ]);
+
+  setMode("cinematic");
+
+  say("...",0);
+
+  beep(120,.6,"sawtooth",.05,-60);
+
+}
+
+function updateWeakpoint(dt){
+
+  if(!boss.wp){
+    boss.wp = { state:"wait", t:rand(1.3,2.1) };
+  }
+
+  const w = boss.wp;
+
+  w.t -= dt;
+
+  if(w.state === "wait" && w.t <= 0){
+
+    w.state = "pre";
+    w.t = .3;
+    w.x = rand(W * .18,W * .82);
+    w.y = rand(64,150);
+
+  }
+
+  else if(w.state === "pre" && w.t <= 0){
+
+    w.state = "live";
+    w.t = 1.05;
+
+    boss.x = w.x;
+    boss.y = w.y;
+    boss.R = 22;
+    boss.inv = false;
+
+    beep(700,.08,"square",.03);
+
+  }
+
+  else if(w.state === "live" && w.t <= 0){
+
+    w.state = "wait";
+    w.t = rand(1.5,2.4);
+
+    boss.inv = true;
+    boss.x = -9999;
+    boss.y = -9999;
+
+  }
+
+}
+
 /* ---------- player ---------- */
 
 function hurt(){
 
-  if(pl.inv > 0 || pl.dead || mode !== "fight") return false;
-
-  /* shield: block for free, then go on cooldown */
+  if(pl.inv > 0 || pl.dead || (mode !== "fight" && mode !== "trans")) return false;
 
   if(pl.ability === "shield" && pl.shieldReady){
 
@@ -5907,8 +6606,6 @@ function hurt(){
 
   }
 
-  /* overheal: spend a green heart instead of a real one */
-
   if(pl.ability === "overheal" && pl.over > 0){
 
     pl.over--;
@@ -5916,7 +6613,7 @@ function hurt(){
 
     shake = 10;
 
-    clearBullets(true);
+    needClear = true;
 
     burst(pl.x,pl.y,20,C.green,240,.6,2.6);
     ringFx(pl.x,pl.y,"rgba(109,255,168,1)",480,.6);
@@ -5960,7 +6657,7 @@ function hurt(){
 
     pl.dead = true;
 
-    store.set("novaDeaths",store.get("novaDeaths",0) + 1);
+    store.set(bossKind + "Deaths",store.get(bossKind + "Deaths",0) + 1);
 
     burst(pl.x,pl.y,50,"#ff4d6d",320,1.1,3);
 
@@ -5968,7 +6665,7 @@ function hurt(){
 
     setMode("lost");
 
-    say("Nova wins this round.",6);
+    say(bossDisplayName() + " wins this round.",6);
 
     beep(220,.9,"sawtooth",.06,-180);
 
@@ -5976,7 +6673,7 @@ function hurt(){
 
   else if(Math.random() < .55){
 
-    say(pl.hp === 1 ? pick(T_HURT_LOW) : pick(T_HURT),2.4);
+    say(pl.hp === 1 ? pick(curHurtLow()) : pick(curHurt()),2.4);
 
   }
 
@@ -5986,7 +6683,7 @@ function hurt(){
 
 function bomb(){
 
-  if(!active || paused || pl.dead || mode !== "fight" || pl.bombs <= 0 || pl.bombLock) return;
+  if(!active || paused || pl.dead || (mode !== "fight" && mode !== "trans") || pl.bombs <= 0 || pl.bombLock) return;
 
   pl.bombs--;
   pl.inv = Math.max(pl.inv,1.7);
@@ -6001,7 +6698,7 @@ function bomb(){
 
   beep(150,.5,"sawtooth",.06,500);
 
-  if(Math.random() < .5) say(pick(T_BOMB),2);
+  if(Math.random() < .5) say(pick(curBomb()),2);
 
   hitBoss(30);
 
@@ -6051,6 +6748,8 @@ function hitBoss(d){
 
   }else if(boss.hp <= 0){
 
+    if(bossKind === "query" && boss.weakpointMode) boss.R = bossR();
+
     killBoss();
 
   }
@@ -6058,8 +6757,6 @@ function hitBoss(d){
 }
 
 function updatePlayer(dt){
-
-  /* ability upkeep (runs even mid-transition so it feels continuous) */
 
   if(pl.ability === "homing" && !pl.dead){
 
@@ -6086,21 +6783,10 @@ function updatePlayer(dt){
 
   pl.focus = fk || fm;
 
-  const tx = clamp(ptr.x,8,W - 8);
-  const ty = clamp(ptr.y - (ptr.type === "touch" ? 70 : 0),8,H - 8);
+  /* direct, no-lag cursor tracking */
 
-  const dx = tx - pl.x;
-  const dy = ty - pl.y;
-  const d = Math.hypot(dx,dy);
-  const sp = (pl.focus ? 360 : 860) * Math.max(.8,U) * dt;
-
-  if(d > sp){
-    pl.x += dx / d * sp;
-    pl.y += dy / d * sp;
-  }else{
-    pl.x = tx;
-    pl.y = ty;
-  }
+  pl.x = clamp(ptr.x,8,W - 8);
+  pl.y = clamp(ptr.y - (ptr.type === "touch" ? 70 : 0),8,H - 8);
 
   pl.inv = Math.max(0,pl.inv - dt);
 
@@ -6108,7 +6794,7 @@ function updatePlayer(dt){
 
   if(pl.shoot <= 0 && !pl.bombLock && (mode === "fight" || mode === "trans")){
 
-    pl.shoot = .075;
+    pl.shoot = pl.focus ? .095 : .075;
 
     const off = pl.focus ? 3 : 8;
 
@@ -6130,7 +6816,7 @@ function updatePB(dt){
 
     const b = pb[i];
 
-    if(!boss.gone){
+    if(!boss.gone && !boss.inv){
 
       if(strongHome){
 
@@ -6196,7 +6882,7 @@ function updatePB(dt){
 
 function updateBullets(dt){
 
-  const canHurt = mode === "fight" && !pl.dead;
+  const canHurt = (mode === "fight" || mode === "trans") && !pl.dead;
 
   for(let i = bul.length - 1; i >= 0; i--){
 
@@ -6204,6 +6890,7 @@ function updateBullets(dt){
 
     if(b.acc) b.sp = Math.min(b.max || 1e9,b.sp + b.acc * dt);
     if(b.turn) b.ang += b.turn * dt;
+    if(b.wig) b.ang += Math.sin((time + b.wp) * b.wf) * b.wig * dt;
 
     b.x += Math.cos(b.ang) * b.sp * dt;
     b.y += Math.sin(b.ang) * b.sp * dt;
@@ -6214,7 +6901,7 @@ function updateBullets(dt){
 
       const dx = b.x - pl.x;
       const dy = b.y - pl.y;
-      const rr = b.r * .8 + pl.r;
+      const rr = b.r * .8 + hitR();
 
       if(dx * dx + dy * dy < rr * rr && hurt()) remove = true;
 
@@ -6259,7 +6946,7 @@ function updateLasers(dt){
 
       if(l.t > l.tele + l.dur){
         done = true;
-      }else if(on && mode === "fight" && Math.abs(pl.x - l.pos) < l.w * .5 + pl.r){
+      }else if(on && mode === "fight" && Math.abs(pl.x - l.pos) < l.w * .5 + hitR()){
         hurt();
       }
 
@@ -6272,8 +6959,8 @@ function updateLasers(dt){
       }else if(
         on &&
         mode === "fight" &&
-        Math.abs(pl.y - l.y) < l.w * .5 + pl.r &&
-        Math.abs(pl.x - l.gap) > l.gapW * .5 - pl.r
+        Math.abs(pl.y - l.y) < l.w * .5 + hitR() &&
+        Math.abs(pl.x - l.gap) > l.gapW * .5 - hitR()
       ){
         hurt();
       }
@@ -6327,13 +7014,30 @@ function updateFx(dt){
     f.l -= dt;
 
     if(f.k === "r"){
+
       f.r += f.vr * dt;
       f.vr *= Math.pow(.25,dt);
+
+    }else if(f.k === "g"){
+
+      /* static telegraph ray, no movement */
+
+    }else if(f.k === "v"){
+
+      const dx = f.cx - f.x;
+      const dy = f.cy - f.y;
+      const d = Math.hypot(dx,dy) || 1;
+
+      f.x += (dx / d) * 260 * dt + (-dy / d) * 90 * dt;
+      f.y += (dy / d) * 260 * dt + (dx / d) * 90 * dt;
+
     }else{
+
       f.x += f.vx * dt;
       f.y += f.vy * dt;
       f.vx *= fr;
       f.vy *= fr;
+
     }
 
     if(f.l <= 0){
@@ -6355,7 +7059,7 @@ function runQueue(dt){
 
     if(q.t <= 0){
       queue.splice(i,1);
-      if(mode === "fight") q.fn();
+      if(mode === "fight" || mode === "cinematic") q.fn();
     }
 
   }
@@ -6383,13 +7087,17 @@ function update(dt){
     cardT = .4;
   }
 
-  for(const s of stars){
+  if(!boss.blackout){
 
-    s.y += s.v * dt * (1 + boss.phase * .35);
+    for(const s of stars){
 
-    if(s.y > H){
-      s.y = -2;
-      s.x = Math.random() * W;
+      s.y += s.v * dt * (1 + boss.phase * .35);
+
+      if(s.y > H){
+        s.y = -2;
+        s.x = Math.random() * W;
+      }
+
     }
 
   }
@@ -6410,7 +7118,7 @@ function update(dt){
 
         boss.inv = false;
         setMode("fight");
-        say(pick(T_START),3.6);
+        say(pick(curStart()),3.6);
 
       }
 
@@ -6422,23 +7130,27 @@ function update(dt){
 
     attacks(dt);
 
-    if(!boss.dash && !pl.dead && !boss.inv){
+    if(bossKind !== "query" || !boss.weakpointMode){
 
-      const dx = pl.x - boss.x;
-      const dy = pl.y - boss.y;
-      const rr = boss.R * .8 + pl.r;
+      if(!boss.dash && !pl.dead && !boss.inv){
 
-      if(dx * dx + dy * dy < rr * rr) hurt();
+        const dx = pl.x - boss.x;
+        const dy = pl.y - boss.y;
+        const rr = boss.R * .8 + hitR();
 
-    }
+        if(dx * dx + dy * dy < rr * rr) hurt();
 
-    if(boss.dash && (boss.dash.stage === "go" || boss.dash.stage === "back")){
+      }
 
-      const dx = pl.x - boss.x;
-      const dy = pl.y - boss.y;
-      const rr = boss.R * .8 + pl.r;
+      if(boss.dash && (boss.dash.stage === "go" || boss.dash.stage === "back")){
 
-      if(dx * dx + dy * dy < rr * rr) hurt();
+        const dx = pl.x - boss.x;
+        const dy = pl.y - boss.y;
+        const rr = boss.R * .8 + hitR();
+
+        if(dx * dx + dy * dy < rr * rr) hurt();
+
+      }
 
     }
 
@@ -6453,6 +7165,26 @@ function update(dt){
 
   }
 
+  else if(mode === "cinematic"){
+
+    if(modeT > 4.3){
+
+      boss.hp = boss.max * .05;
+      boss.inv = true;
+      boss.x = -9999;
+      boss.y = -9999;
+      boss.blackout = true;
+      boss.weakpointMode = true;
+      boss.wp = null;
+
+      setMode("fight");
+
+      say("Try to hit a moving target.",3);
+
+    }
+
+  }
+
   else if(mode === "dying"){
 
     dyingUpdate(dt);
@@ -6463,16 +7195,20 @@ function update(dt){
   updateTurrets(dt);
   updateLasers(dt);
   updateBullets(dt);
+
+  if(needClear){
+    needClear = false;
+    clearBullets(true);
+  }
+
   updatePB(dt);
   updateFx(dt);
-
-  /* boss HP shown in the menu's own counter */
 
   const pct = Math.max(0,Math.ceil(boss.hp / boss.max * 100));
 
   if(pct !== lastPct && mode !== "intro" && mode !== "picking"){
     lastPct = pct;
-    $("gameCount").textContent = "Nova · " + pct + "%";
+    $("gameCount").textContent = bossDisplayName() + " · " + pct + "%";
   }
 
 }
@@ -6528,8 +7264,16 @@ function drawBoss(){
 
   const b = boss;
 
-  if(b.gone) return;
+  if(b.gone || b.hidden) return;
 
+  if(bossKind === "nova") drawNovaBody();
+  else drawQueryBody();
+
+}
+
+function drawNovaBody(){
+
+  const b = boss;
   const R = b.R;
   const col = PH_RGB[b.phase];
   const pulse = 1 + Math.sin(time * 3) * .04;
@@ -6544,8 +7288,6 @@ function drawBoss(){
   const x = b.x + ox;
   const y = b.y + oy;
 
-  /* aura */
-
   const g = ctx.createRadialGradient(x,y,R * .3,x,y,R * 3);
 
   g.addColorStop(0,rgba(col,.38));
@@ -6555,8 +7297,6 @@ function drawBoss(){
   ctx.beginPath();
   ctx.arc(x,y,R * 3,0,TAU);
   ctx.fill();
-
-  /* orbiters */
 
   const n = 2 + b.phase;
 
@@ -6571,8 +7311,6 @@ function drawBoss(){
     ctx.fill();
 
   }
-
-  /* body */
 
   ctx.save();
   ctx.translate(x,y);
@@ -6605,8 +7343,6 @@ function drawBoss(){
   ctx.stroke();
 
   ctx.restore();
-
-  /* face (doesn't rotate) */
 
   const dx = pl.x - x;
   const dy = pl.y - y;
@@ -6656,8 +7392,6 @@ function drawBoss(){
 
   }
 
-  /* mouth */
-
   ctx.strokeStyle = "#1a1220";
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -6684,8 +7418,6 @@ function drawBoss(){
 
   }
 
-  /* shield while untouchable */
-
   if(b.inv && mode !== "intro" && mode !== "picking"){
 
     ctx.strokeStyle = "rgba(255,255,255,.55)";
@@ -6696,6 +7428,256 @@ function drawBoss(){
     ctx.arc(x,y,R * 1.25,0,TAU);
     ctx.stroke();
     ctx.setLineDash([]);
+
+  }
+
+}
+
+function drawQueryBody(){
+
+  const b = boss;
+  const R = b.R;
+  const col = QUERY_RGB[b.phase];
+  const pulse = 1 + Math.sin(time * 3) * .03;
+
+  let ox = 0, oy = 0;
+
+  if(b.dash && b.dash.stage === "tele"){
+    ox = rand(-3,3);
+    oy = rand(-3,3);
+  }
+
+  const x = b.x + ox;
+  const y = b.y + oy;
+
+  const g = ctx.createRadialGradient(x,y,R * .3,x,y,R * 3);
+
+  g.addColorStop(0,rgba(col,.34));
+  g.addColorStop(1,rgba(col,0));
+
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x,y,R * 3,0,TAU);
+  ctx.fill();
+
+  const n = 2 + b.phase;
+
+  for(let i = 0; i < n; i++){
+
+    const a = time * (1 + i * .16) + i * TAU / n;
+    const d = R * 2.1;
+    const px = x + Math.cos(a) * d;
+    const py = y + Math.sin(a) * d;
+
+    ctx.fillStyle = rgba(col,.85);
+    ctx.beginPath();
+    ctx.arc(px,py,R * .13,0,TAU);
+    ctx.fill();
+
+  }
+
+  const w = R * 2.6;
+  const h = R * 1.05;
+
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(pulse,pulse);
+
+  const rr = h * .5;
+
+  ctx.beginPath();
+  ctx.moveTo(-w / 2 + rr,-h / 2);
+  ctx.lineTo(w / 2 - rr,-h / 2);
+  ctx.arc(w / 2 - rr,0,rr,-Math.PI / 2,Math.PI / 2);
+  ctx.lineTo(-w / 2 + rr,h / 2);
+  ctx.arc(-w / 2 + rr,0,rr,Math.PI / 2,-Math.PI / 2);
+  ctx.closePath();
+
+  if(b.flash > 0){
+
+    ctx.fillStyle = "#ffffff";
+
+  }else{
+
+    const bg = ctx.createLinearGradient(-w / 2,0,w / 2,0);
+
+    bg.addColorStop(0,rgba([col[0] * .5,col[1] * .5,col[2] * .5],1));
+    bg.addColorStop(.5,rgba(col,1));
+    bg.addColorStop(1,rgba([col[0] * .5,col[1] * .5,col[2] * .5],1));
+
+    ctx.fillStyle = bg;
+
+  }
+
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255,255,255,.85)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.restore();
+
+  ctx.save();
+  ctx.font = (R * .32) + "px " + MONO;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "rgba(10,14,10,.85)";
+
+  const label = b.dash && b.dash.stage === "tele" ? "deleting..." : "search...";
+
+  ctx.fillText(label,x - w * .42,y);
+
+  if(Math.floor(time * 2) % 2 === 0){
+    const tw = ctx.measureText(label).width;
+    ctx.fillRect(x - w * .42 + tw + 3,y - R * .16,2,R * .32);
+  }
+
+  ctx.restore();
+
+  const dx = pl.x - x;
+  const dy = pl.y - y;
+
+  const mx = x + w * .36;
+  const my = y;
+  const glassR = R * .24;
+  const tilt = Math.atan2(dy,dx) * .25;
+
+  ctx.save();
+  ctx.translate(mx,my);
+  ctx.rotate(tilt);
+  ctx.strokeStyle = "#1a1220";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(0,0,glassR,0,TAU);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(glassR * .7,glassR * .7);
+  ctx.lineTo(glassR * 1.6,glassR * 1.6);
+  ctx.stroke();
+  ctx.restore();
+
+  if(b.inv && mode !== "intro" && mode !== "picking" && mode !== "cinematic"){
+
+    ctx.strokeStyle = "rgba(255,255,255,.5)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6,8]);
+    ctx.lineDashOffset = -time * 30;
+    ctx.beginPath();
+    ctx.ellipse(x,y,w * .62,h * 1.3,0,0,TAU);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+  }
+
+}
+
+function drawWeakpoint(){
+
+  if(!boss.weakpointMode || !boss.wp) return;
+
+  const w = boss.wp;
+
+  if(w.state === "wait") return;
+
+  const x = w.x, y = w.y;
+  const live = w.state === "live";
+  const a = live ? 1 : (.3 + .3 * Math.abs(Math.sin(time * 14)));
+
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.translate(x,y);
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.lineTo(0,16);
+  ctx.lineTo(4.5,12.5);
+  ctx.lineTo(7,18);
+  ctx.lineTo(9,17);
+  ctx.lineTo(6.5,11.5);
+  ctx.lineTo(11,11.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  if(live){
+
+    ctx.strokeStyle = "rgba(109,255,168,.8)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x + 5,y + 8,20 + Math.sin(time * 10) * 3,0,TAU);
+    ctx.stroke();
+
+  }
+
+}
+
+function drawCinematic(){
+
+  const t = modeT;
+
+  ctx.fillStyle = "rgba(0,0,0,.55)";
+  ctx.fillRect(0,0,W,H);
+
+  if(t < 3.0){
+
+    const h = Math.min(H * .4,260);
+    const slide = easeOut(t / .9);
+    const py = H - h * slide;
+
+    ctx.fillStyle = "#1e1e1e";
+    ctx.fillRect(0,py,W,h);
+
+    ctx.strokeStyle = "#3a3a3a";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0,py);
+    ctx.lineTo(W,py);
+    ctx.stroke();
+
+    const cmd = boss.cineCmd;
+    const typeProgress = clamp((t - .9) / 1.6,0,1);
+    const shown = cmd.slice(0,Math.round(cmd.length * typeProgress));
+
+    ctx.font = "14px " + MONO;
+    ctx.fillStyle = "#6dffa8";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("> " + shown + (typeProgress < 1 && Math.floor(t * 6) % 2 === 0 ? "▍" : ""),24,py + 24);
+
+    if(t > 2.6){
+      ctx.fillStyle = "#ff6d6d";
+      ctx.fillText("Uncaught RealityError: menu is not defined",24,py + 50);
+    }
+
+  }else{
+
+    if(!boss.vortexSpawned){
+
+      boss.vortexSpawned = true;
+
+      const cx = W / 2, cy = H / 2;
+      const chars = (boss.cineCmd + " REALITY ERROR").split("");
+
+      chars.forEach(ch => {
+
+        if(ch === " ") return;
+
+        fx.push({
+          k:"v", ch,
+          x:rand(0,W), y:rand(0,H),
+          cx, cy,
+          l:1.3, m:1.3,
+          c:pick([C.gold,C.pink,C.violet,C.cyan,"#fff"])
+        });
+
+      });
+
+      shake = 20;
+
+    }
 
   }
 
@@ -6846,6 +7828,22 @@ function drawBullets(){
 
   for(const b of bul){
 
+    if(b.ch){
+
+      ctx.font = Math.round(b.r * 1.8) + "px " + MONO;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = b.c;
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = b.c;
+      ctx.globalAlpha = 1;
+      ctx.fillText(b.ch,b.x,b.y);
+      ctx.shadowBlur = 0;
+
+      continue;
+
+    }
+
     ctx.fillStyle = b.c;
 
     ctx.globalAlpha = .28;
@@ -6904,6 +7902,30 @@ function drawFx(){
       ctx.arc(f.x,f.y,f.r,0,TAU);
       ctx.stroke();
 
+    }else if(f.k === "g"){
+
+      ctx.save();
+      ctx.translate(f.x,f.y);
+      ctx.rotate(f.ang);
+      ctx.strokeStyle = f.c;
+      ctx.globalAlpha = a * .5;
+      ctx.setLineDash([6,6]);
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(260,0);
+      ctx.stroke();
+      ctx.restore();
+
+    }else if(f.k === "v"){
+
+      ctx.font = "16px " + MONO;
+      ctx.fillStyle = f.c;
+      ctx.globalAlpha = a;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(f.ch,f.x,f.y);
+
     }else{
 
       ctx.fillStyle = f.c;
@@ -6940,7 +7962,7 @@ function drawPlayer(){
 
   ctx.fillStyle = "#fff";
   ctx.beginPath();
-  ctx.arc(pl.x,pl.y,Math.max(2,pl.r * .7),0,TAU);
+  ctx.arc(pl.x,pl.y,Math.max(2,hitR() * .7),0,TAU);
   ctx.fill();
 
   if(pl.focus){
@@ -6948,7 +7970,7 @@ function drawPlayer(){
     ctx.strokeStyle = "rgba(255,255,255,.75)";
     ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.arc(pl.x,pl.y,pl.r + 5,0,TAU);
+    ctx.arc(pl.x,pl.y,hitR() + 5,0,TAU);
     ctx.stroke();
 
   }
@@ -6959,7 +7981,7 @@ function drawPlayer(){
     ctx.lineWidth = 1.4;
     ctx.setLineDash(pl.homing ? [] : [4,5]);
     ctx.beginPath();
-    ctx.arc(pl.x,pl.y,pl.r + 9,0,TAU);
+    ctx.arc(pl.x,pl.y,hitR() + 9,0,TAU);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -6970,7 +7992,7 @@ function drawPlayer(){
     ctx.strokeStyle = pl.shieldReady ? "rgba(179,148,255,.9)" : "rgba(179,148,255,.25)";
     ctx.lineWidth = 1.6;
     ctx.beginPath();
-    ctx.arc(pl.x,pl.y,pl.r + 6,0,TAU);
+    ctx.arc(pl.x,pl.y,hitR() + 6,0,TAU);
     ctx.stroke();
 
   }
@@ -6981,9 +8003,7 @@ function drawPlayer(){
 
 function drawHud(){
 
-  const col = PH_RGB[boss.phase];
-
-  /* boss bar */
+  const col = curRGB()[boss.phase];
 
   const bw = Math.min(W - 40,720);
   const bx = (W - bw) / 2;
@@ -7005,18 +8025,14 @@ function drawHud(){
 
   [.25,.5,.75].forEach(p => ctx.fillRect(bx + bw * p - 1,by,2,7));
 
-  text("Nova",bx,29,11,600,"rgba(255,255,255,.75)","left");
+  text(bossDisplayName(),bx,29,11,600,"rgba(255,255,255,.75)","left");
   text(fmt(time),bx + bw,29,11,500,"rgba(255,255,255,.5)","right");
-
-  /* boss talking */
 
   if(caption.t > 0 && caption.text){
 
     text(caption.text,W / 2,54,14,500,rgba(col,1),"center",clamp(caption.t * 2,0,1));
 
   }
-
-  /* ability tag */
 
   if(pl.ability && mode !== "intro" && mode !== "picking"){
 
@@ -7035,8 +8051,6 @@ function drawHud(){
     }
 
   }
-
-  /* hearts (respects ability maxHp) */
 
   const heartCount = pl.maxHp || 5;
 
@@ -7074,8 +8088,6 @@ function drawHud(){
 
   }
 
-  /* bombs */
-
   for(let i = 0; i < 3; i++){
 
     starPath(W - 22 - i * 22,H - 26,8,3.6,0);
@@ -7091,14 +8103,12 @@ function drawHud(){
 
   }
 
-  /* controls hint */
-
   if(hintT > 0 && mode !== "intro" && mode !== "picking"){
 
     text(
       W < 520
         ? "drag to move · 2nd finger to bomb"
-        : "move your cursor · hold click to focus · space to bomb · esc to pause",
+        : "cursor moves instantly · hold click to shrink your hitbox · space to bomb · esc to pause",
       W / 2,H - 26,11,500,"rgba(255,255,255,.7)","center",clamp(hintT,0,1)
     );
 
@@ -7108,30 +8118,29 @@ function drawHud(){
 
 function drawOverlays(){
 
-  /* intro title */
-
   if(mode === "intro" && modeT > .3 && modeT < 2.7){
 
     const a = Math.sin(clamp((modeT - .3) / 2.4,0,1) * Math.PI);
 
-    text("N  O  V  A",W / 2,H * .46,Math.min(64,W * .13),300,"#ffd76a","center",a);
-    text("the star that fell into the menu",W / 2,H * .46 + 44,13,400,"#fff","center",a * .8);
+    if(bossKind === "nova"){
+      text("N  O  V  A",W / 2,H * .46,Math.min(64,W * .13),300,"#ffd76a","center",a);
+      text("the star that fell into the menu",W / 2,H * .46 + 44,13,400,"#fff","center",a * .8);
+    }else{
+      text("Q U E R Y",W / 2,H * .46,Math.min(60,W * .12),300,"#6dffa8","center",a);
+      text("the search bar that learned to bite",W / 2,H * .46 + 44,13,400,"#fff","center",a * .8);
+    }
 
   }
-
-  /* phase banner */
 
   if(banner.t > 0){
 
     const a = Math.sin(clamp(banner.t / 2.4,0,1) * Math.PI);
-    const col = rgba(PH_RGB[boss.phase],1);
+    const col = rgba(curRGB()[boss.phase],1);
 
     text(banner.a,W / 2,H * .42,Math.min(46,W * .1),300,"#fff","center",clamp(a * 1.4,0,1));
     text(banner.b,W / 2,H * .42 + 36,15,500,col,"center",clamp(a * 1.4,0,1));
 
   }
-
-  /* red / white flashes */
 
   if(hitA > 0){
     ctx.fillStyle = "rgba(255,40,70," + hitA * .35 + ")";
@@ -7143,8 +8152,6 @@ function drawOverlays(){
     ctx.fillRect(0,0,W,H);
   }
 
-  /* lost */
-
   if(mode === "lost" && modeT > .9){
 
     const a = clamp((modeT - .9) * 2,0,1);
@@ -7153,34 +8160,37 @@ function drawOverlays(){
     ctx.fillStyle = "rgba(0,0,0," + a * .6 + ")";
     ctx.fillRect(0,0,W,H);
 
-    text("Nova wins this round.",W / 2,H * .4,Math.min(34,W * .075),400,"#fff","center",a);
-    text("Phase " + ROMAN[boss.phase] + " · Nova at " + pct + "% · " + fmt(time),W / 2,H * .4 + 40,13,400,"rgba(255,255,255,.7)","center",a);
-    text("Click to try again · Esc to leave",W / 2,H * .4 + 76,12,500,rgba(PH_RGB[boss.phase],1),"center",a);
+    text(bossDisplayName() + " wins this round.",W / 2,H * .4,Math.min(34,W * .075),400,"#fff","center",a);
+    text("Phase " + ROMAN[boss.phase] + " · " + bossDisplayName() + " at " + pct + "% · " + fmt(time),W / 2,H * .4 + 40,13,400,"rgba(255,255,255,.7)","center",a);
+    text("Click to try again · Esc to leave",W / 2,H * .4 + 76,12,500,rgba(curRGB()[boss.phase],1),"center",a);
 
   }
-
-  /* won */
 
   if(mode === "won" && modeT > .5){
 
     const a = clamp((modeT - .5) * 1.5,0,1);
-    const best = store.get("novaBest",0);
+    const best = store.get(bossKind + "Best",0);
 
     ctx.fillStyle = "rgba(0,0,0," + a * .55 + ")";
     ctx.fillRect(0,0,W,H);
 
-    text("Nova has fallen.",W / 2,H * .38,Math.min(38,W * .085),400,"#ffd76a","center",a);
+    text(bossDisplayName() + " has fallen.",W / 2,H * .38,Math.min(38,W * .085),400,"#ffd76a","center",a);
     text(fmt(time) + " · " + hitsTaken + " hit" + (hitsTaken === 1 ? "" : "s") + " taken" + (best ? " · best " + fmt(best) : ""),W / 2,H * .38 + 42,13,400,"rgba(255,255,255,.75)","center",a);
 
     if(boss.first){
-      text("You unlocked the animated NOVA theme.",W / 2,H * .38 + 72,13,500,"#fff","center",a);
+
+      text(
+        bossKind === "nova"
+          ? "You unlocked the animated NOVA theme."
+          : "You unlocked the QUERY theme and custom cursors.",
+        W / 2,H * .38 + 72,13,500,"#fff","center",a
+      );
+
     }
 
     text("Click to return to the menu",W / 2,H * .38 + 106,12,500,"rgba(255,255,255,.6)","center",a);
 
   }
-
-  /* paused */
 
   if(paused){
 
@@ -7204,25 +8214,37 @@ function draw(){
     ctx.translate(rand(-shake,shake) * .5,rand(-shake,shake) * .5);
   }
 
-  ctx.fillStyle = "#fff";
+  if(boss.blackout){
 
-  for(const s of stars){
-    ctx.globalAlpha = .2 + .5 * Math.abs(Math.sin(time * s.tw + s.p));
-    ctx.fillRect(s.x,s.y,s.s,s.s);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,W,H);
+
+  }else{
+
+    ctx.fillStyle = "#fff";
+
+    for(const s of stars){
+      ctx.globalAlpha = .2 + .5 * Math.abs(Math.sin(time * s.tw + s.p));
+      ctx.fillRect(s.x,s.y,s.s,s.s);
+    }
+
+    ctx.globalAlpha = 1;
+
   }
-
-  ctx.globalAlpha = 1;
 
   drawLasers();
   drawTurrets();
   drawDashTele();
   drawBoss();
+  drawWeakpoint();
   drawBullets();
   drawPB();
   drawFx();
   drawPlayer();
 
   ctx.restore();
+
+  if(mode === "cinematic") drawCinematic();
 
   drawHud();
   drawOverlays();
@@ -7273,12 +8295,14 @@ function newRun(){
   banner = { t:0, a:"", b:"" };
   caption = { t:0, text:"" };
 
+  const max = MAXHP_BY_KIND[bossKind];
+
   boss = {
     x:W / 2,
     y:-160,
     hy:homeY(),
-    hp:MAXHP,
-    max:MAXHP,
+    hp:max,
+    max,
     phase:0,
     R:bossR(),
     rot:0,
@@ -7291,7 +8315,14 @@ function newRun(){
     tx:W / 2,
     ty:homeY(),
     gone:false,
-    first:false
+    first:false,
+    hidden:false,
+    weakpointMode:false,
+    blackout:false,
+    scriptedStarted:false,
+    wp:null,
+    vortexSpawned:false,
+    cineCmd:""
   };
 
   const sx = ptr.ok ? ptr.x : W / 2;
@@ -7334,7 +8365,7 @@ function newRun(){
   releaseEls();
   hidePick();
 
-  applyThemeTemp(PH_THEME[0]);
+  applyThemeTemp(curTHEME()[0]);
 
   say("...",0);
 
@@ -7347,10 +8378,11 @@ function newRun(){
 
 }
 
-function startNova(){
+function startFight(kind){
 
   if(active) return;
 
+  bossKind = kind;
   active = true;
   paused = false;
 
@@ -7362,6 +8394,7 @@ function startNova(){
     .forEach(id => $(id).classList.remove("open"));
 
   $("themePanel").classList.add("hidden");
+  cursorPanel.classList.add("hidden");
 
   window.scrollTo(0,0);
 
@@ -7379,9 +8412,9 @@ function startNova(){
     ph:search.placeholder
   };
 
-  if(elTitle) elTitle.textContent = "Nova's Library";
+  if(elTitle) elTitle.textContent = kind === "nova" ? "Nova's Library" : "QUERY";
 
-  search.placeholder = "Search for a weak point...";
+  search.placeholder = kind === "nova" ? "Search for a weak point..." : "searching...";
 
   resize();
 
@@ -7391,12 +8424,23 @@ function startNova(){
 
   newRun();
 
+  syncCursorVisibility();
+
   lastT = performance.now();
 
   raf = requestAnimationFrame(frame);
 
   beep(90,.6,"sawtooth",.04,200);
 
+}
+
+function startNova(){
+  startFight("nova");
+}
+
+function startQuery(){
+  if(!store.get("novaBeaten",false)) return;
+  startFight("query");
 }
 
 function endNova(){
@@ -7432,6 +8476,8 @@ function endNova(){
   fk = false;
   fm = false;
   fingers.clear();
+
+  syncCursorVisibility();
 
   if(!document.querySelector(".modal.open,.shortcuts.open")){
     document.body.classList.remove("modal-open");
@@ -7505,8 +8551,6 @@ cv.addEventListener("contextmenu",e => e.preventDefault());
 window.addEventListener("keydown",e => {
 
   if(!active) return;
-
-  /* swallow everything so the hub's own shortcuts (R, L, ?, /) stay quiet */
 
   e.stopImmediatePropagation();
 
@@ -7605,7 +8649,7 @@ window.addEventListener("resize",() => {
    SECRET TRIGGERS
 ============================================================ */
 
-/* 1) password: star / nova (wraps the original login handler) */
+/* 1) NOVA: password "star" / "nova" */
 
 const originalSubmit = loginForm.onsubmit;
 
@@ -7630,7 +8674,7 @@ loginForm.onsubmit = e => {
 
 };
 
-/* 2) click the hub title 7 times fast */
+/* 2) NOVA: click the hub title 7 times fast */
 
 let titleClicks = 0;
 let titleTimer = null;
@@ -7655,6 +8699,47 @@ if(elTitle){
   });
 
 }
+
+/* 3) QUERY: type "searchbar" into the search box (only once Nova is beaten) */
+
+let searchGlitching = false;
+
+search.addEventListener("input",() => {
+
+  if(searchGlitching || active) return;
+  if(!store.get("novaBeaten",false)) return;
+  if(search.value.trim().toLowerCase() !== "searchbar") return;
+
+  searchGlitching = true;
+  search.disabled = true;
+  search.classList.add("nova-glitch");
+
+  const chars = "!@#$%^&*?/\\<>{}[]01".split("");
+  let n = 0;
+
+  const iv = setInterval(() => {
+
+    search.value = Array.from({ length:8 },() => pick(chars)).join("");
+    n++;
+
+    if(n > 14){
+
+      clearInterval(iv);
+
+      search.value = "";
+      search.disabled = false;
+      search.classList.remove("nova-glitch");
+      searchGlitching = false;
+
+      startQuery();
+
+    }
+
+  },70);
+
+  beep(80,.5,"sawtooth",.08,-40);
+
+});
 
 })();
 
