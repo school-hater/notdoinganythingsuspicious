@@ -20,7 +20,7 @@
   --accent-text:#0b0c0e;
   --glow:rgba(255,255,255,.08);
   --modal-bg:rgba(5,6,8,.78);
-  --card-radius:11px;max
+  --card-radius:11px;
 }
 
 *{
@@ -4854,7 +4854,7 @@ const store = {
 
 const FONT = '-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif';
 const MONO = 'ui-monospace,SFMono-Regular,Menlo,monospace';
-const MAXHP_BY_KIND = { nova:1400, query:2000 };
+const MAXHP_BY_KIND = { nova:1400, query:1250 };
 const BASE_R = 3.6;
 
 const C = {
@@ -5662,7 +5662,14 @@ function ringFx(x,y,col,vr,life){
 
 }
 
+let bulLocked = false;
+
 function clearBullets(spark){
+
+  if(bulLocked){
+    needClear = true;
+    return;
+  }
 
   if(spark){
 
@@ -5710,7 +5717,8 @@ function shoot(x,y,ang,sp,o){
     wig:o.wig || 0,
     wf:o.wf || 5,
     wp:o.wp || 0,
-    ch:o.ch
+    ch:o.ch,
+    dmg:o.dmg || 1
   });
 
 }
@@ -6107,8 +6115,15 @@ function queryAttacks(dt){
   if(b.weakpointMode){
 
     updateWeakpoint(dt);
+    updateHoles(dt);
+    updateDvd(dt);
+    updateMiniDevtools(dt);
 
-    tick("wpHazard",dt,1.6,() => shoot(rand(40,W - 40),-10,Math.PI / 2,220,{ r:5,c:rgba(QUERY_RGB[3],1) }));
+    tick("wpHazard",dt,1.8,() => shoot(rand(40,W - 40),-10,Math.PI / 2,220,{ r:5,c:rgba(QUERY_RGB[3],1) }));
+    tick("giantLaser",dt,6.5,giantLaser,3);
+    tick("homingHole",dt,7.5,spawnHole,5);
+    tick("miniSpam",dt,8.5,startMiniDevtools,4);
+    tick("dvdGlass",dt,14,spawnDvd,6);
 
     return;
 
@@ -6405,7 +6420,11 @@ function nextPhase(){
     b:curNAME()[boss.phase]
   };
 
-  say(curPhaseText()[boss.phase],3.4);
+  if(bossKind === "nova" && boss.phase === 3 && !store.get("queryBeaten",false)){
+    say("No more games. Only me. ...though something's been chewing on the search bar.",4.2);
+  }else{
+    say(curPhaseText()[boss.phase],3.4);
+  }
 
   shake = 18;
   whiteA = .6;
@@ -6519,7 +6538,13 @@ function startCinematic(){
   T = {};
 
   boss.hidden = true;
-  boss.vortexSpawned = false;
+  boss.warpCaptured = false;
+  boss.cineWarpX = undefined;
+  boss.cineWarpY = undefined;
+
+  holes = [];
+  dvd = null;
+  mini = null;
 
   boss.cineCmd = pick([
     "games.forEach(g => g.delete())",
@@ -6533,6 +6558,339 @@ function startCinematic(){
   say("...",0);
 
   beep(120,.6,"sawtooth",.05,-60);
+
+}
+
+/* ---------- finale hazards: giant laser, homing holes, DVD glass, mini devtools ---------- */
+
+let holes = [];
+let dvd = null;
+let mini = null;
+
+function giantLaser(){
+
+  lasers.push({
+    type:"v",
+    pos:clamp(pl.x + rand(-40,40),60,W - 60),
+    w:130 * U,
+    tele:1.5,
+    dur:.4,
+    t:0,
+    dmg:2,
+    big:true
+  });
+
+  say("EXECUTING QUERY...",1.8);
+  beep(90,.8,"sawtooth",.06,-200);
+
+}
+
+function spawnHole(){
+
+  holes.push({
+    x:rand(W * .2,W * .8),
+    y:rand(H * .25,H * .55),
+    t:0,
+    grow:1.6,
+    r:4,
+    maxR:70 * U,
+    state:"grow"
+  });
+
+  say("Inverting...",1.6);
+  beep(140,1.0,"sine",.05,-40);
+
+}
+
+function updateHoles(dt){
+
+  for(let i = holes.length - 1; i >= 0; i--){
+
+    const h = holes[i];
+
+    h.t += dt;
+
+    if(h.state === "grow"){
+
+      const dx = pl.x - h.x, dy = pl.y - h.y, d = Math.hypot(dx,dy) || 1;
+      const sp = 70 * dt;
+
+      h.x += dx / d * sp;
+      h.y += dy / d * sp;
+      h.r = 4 + (h.maxR - 4) * clamp(h.t / h.grow,0,1);
+
+      if(h.t >= h.grow){
+
+        h.state = "implode";
+        h.t = 0;
+
+        const dx2 = pl.x - h.x, dy2 = pl.y - h.y;
+
+        if(dx2 * dx2 + dy2 * dy2 < h.r * h.r) hurt(2);
+
+        burst(h.x,h.y,30,C.violet,260,.6);
+        shake = Math.max(shake,14);
+        beep(200,.4,"sawtooth",.05,-300);
+
+      }
+
+    }else{
+
+      if(h.t > .4){
+        holes[i] = holes[holes.length - 1];
+        holes.pop();
+      }
+
+    }
+
+  }
+
+}
+
+function drawHoles(){
+
+  for(const h of holes){
+
+    if(h.state === "grow"){
+
+      const g = ctx.createRadialGradient(h.x,h.y,0,h.x,h.y,Math.max(1,h.r));
+
+      g.addColorStop(0,"rgba(179,148,255,.05)");
+      g.addColorStop(.7,"rgba(179,148,255,.5)");
+      g.addColorStop(1,"rgba(255,255,255,.9)");
+
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(h.x,h.y,Math.max(1,h.r),0,TAU);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(255,255,255,.6)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(h.x,h.y,Math.max(1,h.r * 1.15),0,TAU);
+      ctx.stroke();
+
+    }else{
+
+      ctx.globalAlpha = clamp(1 - h.t / .4,0,1);
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(h.x,h.y,h.r * (1 + h.t * 3),0,TAU);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+    }
+
+  }
+
+}
+
+function spawnDvd(){
+
+  dvd = {
+    x:rand(W * .3,W * .7),
+    y:rand(H * .3,H * .5),
+    vx:pick([-1,1]) * 140,
+    vy:pick([-1,1]) * 110,
+    r:16,
+    bounces:0,
+    maxBounces:6,
+    t:0,
+    maxLife:13
+  };
+
+  say("Magnifying...",1.4);
+
+}
+
+function updateDvd(dt){
+
+  if(!dvd) return;
+
+  dvd.t += dt;
+  dvd.x += dvd.vx * dt;
+  dvd.y += dvd.vy * dt;
+
+  let bounced = false;
+
+  if(dvd.x < dvd.r){ dvd.x = dvd.r; dvd.vx *= -1; bounced = true; }
+  if(dvd.x > W - dvd.r){ dvd.x = W - dvd.r; dvd.vx *= -1; bounced = true; }
+  if(dvd.y < dvd.r + 40){ dvd.y = dvd.r + 40; dvd.vy *= -1; bounced = true; }
+  if(dvd.y > H - dvd.r){ dvd.y = H - dvd.r; dvd.vy *= -1; bounced = true; }
+
+  if(bounced && dvd.bounces < dvd.maxBounces){
+
+    dvd.bounces++;
+    dvd.r = Math.min(46,dvd.r * 1.18);
+
+    const sp = Math.min(1.35,1 + dvd.bounces * .06);
+
+    dvd.vx *= sp;
+    dvd.vy *= sp;
+
+    burst(dvd.x,dvd.y,10,QUERY_RGB[3],140,.4);
+    beep(300 + dvd.bounces * 30,.1,"square",.03);
+
+  }
+
+  const dx = pl.x - dvd.x, dy = pl.y - dvd.y;
+  const rr = dvd.r * .8 + hitR();
+
+  if(dx * dx + dy * dy < rr * rr){
+    if(hurt(2)) dvd = null;
+  }
+
+  if(dvd && dvd.t > dvd.maxLife) dvd = null;
+
+}
+
+function drawDvd(){
+
+  if(!dvd) return;
+
+  ctx.save();
+  ctx.translate(dvd.x,dvd.y);
+  ctx.strokeStyle = "#1a1220";
+  ctx.fillStyle = "rgba(255,255,255,.15)";
+  ctx.lineWidth = Math.max(3,dvd.r * .14);
+  ctx.beginPath();
+  ctx.arc(0,0,dvd.r * .7,0,TAU);
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(dvd.r * .5,dvd.r * .5);
+  ctx.lineTo(dvd.r * 1.1,dvd.r * 1.1);
+  ctx.stroke();
+  ctx.restore();
+
+}
+
+function startMiniDevtools(){
+
+  mini = { t:0, letters:"", dur:2.2, launched:false };
+
+  say("Compiling an army...",1.6);
+  beep(500,.2,"square",.03);
+
+}
+
+function updateMiniDevtools(dt){
+
+  if(!mini) return;
+
+  mini.t += dt;
+
+  if(!mini.launched){
+
+    if(mini.t < mini.dur){
+
+      if(Math.random() < .6){
+
+        mini.letters += pick("!@#$abcdefghijklmnopqrstuvwxyz".split(""));
+
+        if(mini.letters.length > 26) mini.letters = mini.letters.slice(-26);
+
+      }
+
+    }else{
+
+      mini.launched = true;
+
+      const col = rgba(QUERY_RGB[3],1);
+
+      [...mini.letters].forEach((ch,i) => {
+        later(i * .02,() => shoot(80 + rand(0,Math.max(1,W - 160)),H * .62,-Math.PI / 2 + rand(-.3,.3),rand(220,300),{ r:8,c:col,ch }));
+      });
+
+    }
+
+  }else if(mini.t > mini.dur + 1.4){
+
+    mini = null;
+
+  }
+
+}
+
+function drawMiniDevtools(){
+
+  if(!mini) return;
+
+  const h = 70;
+  const py = H - h;
+
+  ctx.fillStyle = "rgba(20,20,20,.9)";
+  ctx.fillRect(0,py,W,h);
+
+  ctx.strokeStyle = "#3a3a3a";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0,py);
+  ctx.lineTo(W,py);
+  ctx.stroke();
+
+  ctx.font = "13px " + MONO;
+  ctx.fillStyle = "#6dffa8";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText("> " + mini.letters + (Math.floor(time * 6) % 2 === 0 ? "▍" : ""),16,py + h / 2);
+
+}
+
+function drawMutatedBoss(){
+
+  if(!boss.weakpointMode) return;
+
+  const jitterX = Math.sin(time * 37) * 3 + (Math.random() - .5) * 2;
+  const jitterY = Math.cos(time * 29) * 2;
+  const x = W / 2 + jitterX, y = 64 + jitterY;
+  const w = Math.min(W * .7,520), h = 54;
+
+  ctx.save();
+  ctx.translate(x,y);
+
+  ctx.beginPath();
+
+  const segs = 14;
+
+  for(let i = 0; i <= segs; i++){
+    const px = -w / 2 + (w * i / segs);
+    const py = (Math.random() - .5) * 6 - h / 2;
+    if(i === 0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+
+  for(let i = segs; i >= 0; i--){
+    const px = -w / 2 + (w * i / segs);
+    const py = (Math.random() - .5) * 6 + h / 2;
+    ctx.lineTo(px,py);
+  }
+
+  ctx.closePath();
+
+  const g = ctx.createLinearGradient(-w / 2,0,w / 2,0);
+
+  g.addColorStop(0,"rgba(255,60,60,.9)");
+  g.addColorStop(.5,"rgba(20,10,10,.95)");
+  g.addColorStop(1,"rgba(255,60,60,.9)");
+
+  ctx.fillStyle = g;
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(255,255,255,.5)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.font = "13px " + MONO;
+  ctx.fillStyle = "#ff8a8a";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(
+    pick(["SEARCH.EXE STOPPED RESPONDING","QUERY_OVERFLOW","[object Object]","undefined is not a menu"]),
+    0,0
+  );
+
+  ctx.restore();
 
 }
 
@@ -6584,7 +6942,9 @@ function updateWeakpoint(dt){
 
 /* ---------- player ---------- */
 
-function hurt(){
+function hurt(cost){
+
+  cost = cost || 1;
 
   if(pl.inv > 0 || pl.dead || (mode !== "fight" && mode !== "trans")) return false;
 
@@ -6625,7 +6985,7 @@ function hurt(){
 
   }
 
-  pl.hp--;
+  pl.hp -= cost;
   pl.inv = 1.9;
   hitsTaken++;
 
@@ -6882,6 +7242,8 @@ function updatePB(dt){
 
 function updateBullets(dt){
 
+  bulLocked = true;
+
   const canHurt = (mode === "fight" || mode === "trans") && !pl.dead;
 
   for(let i = bul.length - 1; i >= 0; i--){
@@ -6903,7 +7265,7 @@ function updateBullets(dt){
       const dy = b.y - pl.y;
       const rr = b.r * .8 + hitR();
 
-      if(dx * dx + dy * dy < rr * rr && hurt()) remove = true;
+      if(dx * dx + dy * dy < rr * rr && hurt(b.dmg)) remove = true;
 
     }
 
@@ -6929,6 +7291,8 @@ function updateBullets(dt){
 
   }
 
+  bulLocked = false;
+
 }
 
 function updateLasers(dt){
@@ -6947,7 +7311,7 @@ function updateLasers(dt){
       if(l.t > l.tele + l.dur){
         done = true;
       }else if(on && mode === "fight" && Math.abs(pl.x - l.pos) < l.w * .5 + hitR()){
-        hurt();
+        hurt(l.dmg || 1);
       }
 
     }else{
@@ -7167,9 +7531,53 @@ function update(dt){
 
   else if(mode === "cinematic"){
 
-    if(modeT > 4.3){
+    if(modeT >= 3.0 && !boss.warpCaptured){
 
-      boss.hp = boss.max * .05;
+      boss.warpCaptured = true;
+      boss.cineWarpX = pl.x;
+      boss.cineWarpY = pl.y;
+
+      const cx = W / 2, cy = H / 2;
+      const chars = (boss.cineCmd + " REALITY ERROR").split("");
+
+      chars.forEach(ch => {
+
+        if(ch === " ") return;
+
+        fx.push({
+          k:"v", ch,
+          x:rand(0,W), y:rand(0,H),
+          cx, cy,
+          l:1.6, m:1.6,
+          c:pick([C.gold,C.pink,C.violet,C.cyan,"#fff"])
+        });
+
+      });
+
+    }
+
+    if(modeT >= 3.0 && modeT < 5.4){
+
+      tick("warpTrickle",dt,.1,() => {
+
+        const cx = W / 2, cy = H / 2;
+
+        fx.push({
+          k:"v",
+          ch:pick("abcdefghijklmnopqrstuvwxyz0123456789".split("")),
+          x:rand(0,W), y:rand(0,H),
+          cx, cy,
+          l:1.1, m:1.1,
+          c:pick([C.gold,C.pink,C.violet,C.cyan,"#fff"])
+        });
+
+      });
+
+    }
+
+    if(modeT > 6.4){
+
+      boss.hp = boss.max * .08;
       boss.inv = true;
       boss.x = -9999;
       boss.y = -9999;
@@ -7652,32 +8060,58 @@ function drawCinematic(){
       ctx.fillText("Uncaught RealityError: menu is not defined",24,py + 50);
     }
 
-  }else{
+  }else if(t < 5.4){
 
-    if(!boss.vortexSpawned){
+    const k = clamp((t - 3.0) / 2.4,0,1);
+    const cx = W / 2, cy = H / 2;
 
-      boss.vortexSpawned = true;
+    for(const s of stars){
 
-      const cx = W / 2, cy = H / 2;
-      const chars = (boss.cineCmd + " REALITY ERROR").split("");
+      const sx = s.x + (cx - s.x) * k;
+      const sy = s.y + (cy - s.y) * k;
 
-      chars.forEach(ch => {
-
-        if(ch === " ") return;
-
-        fx.push({
-          k:"v", ch,
-          x:rand(0,W), y:rand(0,H),
-          cx, cy,
-          l:1.3, m:1.3,
-          c:pick([C.gold,C.pink,C.violet,C.cyan,"#fff"])
-        });
-
-      });
-
-      shake = 20;
+      ctx.globalAlpha = (1 - k) * .6 + .08;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(sx,sy,s.s,s.s);
 
     }
+
+    ctx.globalAlpha = 1;
+
+    const h = Math.min(H * .4,260);
+    const py = H - h;
+    const pscale = Math.max(.02,1 - k * .92);
+
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.scale(pscale,pscale);
+    ctx.translate(-cx,-cy);
+    ctx.fillStyle = "#1e1e1e";
+    ctx.fillRect(0,py,W,h);
+    ctx.restore();
+
+    if(boss.cineWarpX !== undefined){
+
+      const hx = boss.cineWarpX + (cx - boss.cineWarpX) * k;
+      const hy = boss.cineWarpY + (cy - boss.cineWarpY) * k;
+      const s = Math.max(.6,8 * (1 - k * .85));
+
+      ctx.save();
+      ctx.fillStyle = "#ff4d6d";
+      ctx.shadowColor = "#ff4d6d";
+      ctx.shadowBlur = 14 * (1 - k);
+      heart(hx,hy,s);
+      ctx.fill();
+      ctx.restore();
+
+    }
+
+    shake = Math.max(shake,6 + k * 16);
+
+  }else{
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0,0,W,H);
 
   }
 
@@ -8236,11 +8670,20 @@ function draw(){
   drawTurrets();
   drawDashTele();
   drawBoss();
+
+  if(boss.weakpointMode){
+    drawMutatedBoss();
+    drawHoles();
+    drawDvd();
+    drawMiniDevtools();
+  }
+
   drawWeakpoint();
   drawBullets();
   drawPB();
   drawFx();
-  drawPlayer();
+
+  if(mode !== "cinematic") drawPlayer();
 
   ctx.restore();
 
@@ -8279,6 +8722,9 @@ function newRun(){
   fx = [];
   queue = [];
   T = {};
+  holes = [];
+  dvd = null;
+  mini = null;
 
   time = 0;
   shake = 0;
@@ -8321,7 +8767,9 @@ function newRun(){
     blackout:false,
     scriptedStarted:false,
     wp:null,
-    vortexSpawned:false,
+    warpCaptured:false,
+    cineWarpX:undefined,
+    cineWarpY:undefined,
     cineCmd:""
   };
 
