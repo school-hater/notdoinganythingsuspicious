@@ -74,11 +74,55 @@ button{
 ============================================================ */
 
 .screen{
+  position:relative;
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:28px;
+}
+
+.code-reveal-zone{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:120px;
+  height:22px;
+  transform:translateX(-50%);
+  z-index:3;
+}
+
+.code-reveal-zone.revealed{
+  height:72px;
+}
+
+.code-reveal-box{
+  width:100%;
+  margin-top:6px;
+  padding:6px 8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.32em;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(0,0,0,.32);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(-10px);
+  transition:
+    transform .34s cubic-bezier(.22,1,.36,1),
+    opacity .28s ease,
+    visibility .28s ease;
+}
+
+.code-reveal-box.shown{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
 }
 
 .login{
@@ -2373,6 +2417,16 @@ html[data-theme="query"] input:focus{
 
 <div id="loginScreen" class="screen">
 
+  <div
+    id="codeRevealZone"
+    class="code-reveal-zone"
+    aria-hidden="true"
+  >
+    <div id="codeRevealBox" class="code-reveal-box">
+      <span id="weeklyCodeDisplay"></span>
+    </div>
+  </div>
+
   <div class="login">
 
     <div class="login-mark"></div>
@@ -3267,9 +3321,44 @@ const games = [
    PASSWORDS
 ============================================================ */
 
-const PASSWORD = "5008";
 const SECRET_15_PASSWORD = "unemployed";
 const IDEA_FORM = "https://forms.gle/rNUFYRVaEEqLbyeQ7";
+
+function getMondayWeekId(now){
+
+  const d = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  ));
+
+  const day = d.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+
+  d.setUTCDate(d.getUTCDate() + diff);
+
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const date = String(d.getUTCDate()).padStart(2, "0");
+
+  return d.getUTCFullYear() + "-" + month + "-" + date;
+
+}
+
+function getWeeklyAccessCode(){
+
+  const seed = "games-hub-weekly-access-" + getMondayWeekId(new Date());
+  let hash = 2166136261;
+
+  for(let i = 0; i < seed.length; i++){
+
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+
+  }
+
+  return String((hash >>> 0) % 10000).padStart(4, "0");
+
+}
 
 /* ============================================================
    HELPERS
@@ -3627,7 +3716,7 @@ loginForm.onsubmit = e => {
 
   }
 
-  if(entered === PASSWORD){
+  if(entered === getWeeklyAccessCode()){
 
     sessionStorage.setItem(
       "gameHubUnlocked",
@@ -3645,6 +3734,46 @@ loginForm.onsubmit = e => {
   error.classList.add("visible");
 
 };
+
+const codeRevealZone = $("codeRevealZone");
+const codeRevealBox = $("codeRevealBox");
+const weeklyCodeDisplay = $("weeklyCodeDisplay");
+let codeRevealTimer = null;
+
+function hideWeeklyCodeReveal(){
+
+  if(codeRevealTimer){
+
+    clearTimeout(codeRevealTimer);
+
+    codeRevealTimer = null;
+
+  }
+
+  codeRevealBox.classList.remove("shown");
+  codeRevealZone.classList.remove("revealed");
+
+}
+
+codeRevealZone.addEventListener("mouseenter", () => {
+
+  if(codeRevealTimer){
+
+    clearTimeout(codeRevealTimer);
+
+  }
+
+  codeRevealTimer = setTimeout(() => {
+
+    weeklyCodeDisplay.textContent = getWeeklyAccessCode();
+    codeRevealBox.classList.add("shown");
+    codeRevealZone.classList.add("revealed");
+
+  }, 7000);
+
+});
+
+codeRevealZone.addEventListener("mouseleave", hideWeeklyCodeReveal);
 
 $("logout").onclick = () => {
 
