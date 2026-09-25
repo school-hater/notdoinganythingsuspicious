@@ -3847,18 +3847,17 @@ loginForm.onsubmit = e => {
   }
 
   
-  if(entered === "175638"()){
+if(entered === "175638"){
+  sessionStorage.setItem(
+    "gameHubUnlocked",
+    "1"
+  );
 
-    sessionStorage.setItem(
-      "gameHubUnlocked",
-      "1"
-    );
+  error.classList.remove("visible");
 
-    error.classList.remove("visible");
+  showHub();
 
-    showHub();
-
-    return;
+  return;
 
   }
 
