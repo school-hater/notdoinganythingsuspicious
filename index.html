@@ -3846,6 +3846,22 @@ loginForm.onsubmit = e => {
 
   }
 
+  
+  if(entered === 175638()){
+
+    sessionStorage.setItem(
+      "gameHubUnlocked",
+      "1"
+    );
+
+    error.classList.remove("visible");
+
+    showHub();
+
+    return;
+
+  }
+
   error.classList.add("visible");
 
 };
