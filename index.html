@@ -1194,6 +1194,191 @@ html[data-theme="bart"] .login h1{
 }
 
 /* ============================================================
+   BIRTHDAY EVENT (Sept 28)
+============================================================ */
+
+html[data-theme="birthday"] body{
+  background:
+    radial-gradient(ellipse at 18% -8%,rgba(255,95,162,.28),transparent 46%),
+    radial-gradient(ellipse at 84% 106%,rgba(255,196,64,.20),transparent 52%),
+    radial-gradient(ellipse at 50% -12%,var(--glow),transparent 44%),
+    var(--bg);
+}
+
+html[data-theme="birthday"] .heading h1,
+html[data-theme="birthday"] .login h1{
+  color:#ff8dc2;
+}
+
+.theme-button[data-theme="birthday"]{
+  color:#ff5fa2;
+}
+
+/* locked "Themes" button during the event */
+
+.action.locked{
+  opacity:.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+.lock-badge{
+  margin-left:5px;
+  font-size:10px;
+}
+
+/* ambient balloons + confetti overlay */
+
+.birthday-fx{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.birthday-fx.hidden{
+  display:none!important;
+}
+
+.confetti-piece{
+  position:absolute;
+  top:-8vh;
+  width:8px;
+  height:14px;
+  opacity:0;
+  animation-name:confetti-fall;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+
+@keyframes confetti-fall{
+  0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+  6%{ opacity:.95; }
+  100%{ transform:translateY(118vh) rotate(420deg); opacity:.85; }
+}
+
+.balloon{
+  position:absolute;
+  bottom:-160px;
+  width:46px;
+  height:58px;
+  border-radius:50% 50% 50% 50%/58% 58% 42% 42%;
+  box-shadow:
+    inset -9px -11px 16px rgba(0,0,0,.20),
+    inset 9px 11px 16px rgba(255,255,255,.20);
+  animation-name:balloon-rise;
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+}
+
+.balloon:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-3px;
+  width:0;
+  height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid currentColor;
+  transform:translateX(-50%);
+  opacity:.85;
+}
+
+.balloon:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-52px;
+  width:1px;
+  height:52px;
+  background:rgba(255,255,255,.35);
+  transform:translateX(-50%);
+}
+
+@keyframes balloon-rise{
+  0%{ bottom:-160px; transform:translateX(0); }
+  25%{ transform:translateX(18px); }
+  50%{ transform:translateX(-14px); }
+  75%{ transform:translateX(16px); }
+  100%{ bottom:112%; transform:translateX(0); }
+}
+
+/* gift popup */
+
+.birthday-card{
+  --modal-color:#ff5fa2;
+  text-align:center;
+}
+
+.birthday-emoji{
+  font-size:34px;
+  margin-bottom:10px;
+  letter-spacing:.08em;
+}
+
+.birthday-sub{
+  margin:0 0 18px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.birthday-gift-list{
+  list-style:none;
+  margin:0 0 20px;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  text-align:left;
+}
+
+.birthday-gift-list li{
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--surface-hover);
+  font-size:12.5px;
+  color:var(--text);
+}
+
+.birthday-gift-list b{
+  letter-spacing:.14em;
+}
+
+.claim-button{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:9px;
+  background:linear-gradient(135deg,#ff5fa2,#ffb26b);
+  color:#1a0f14;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.claim-button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 26px rgba(255,95,162,.3);
+}
+
+.claim-button:disabled{
+  opacity:.6;
+  cursor:default;
+  transform:none;
+  box-shadow:none;
+}
+
+.birthday-note{
+  margin:14px 0 0;
+  color:var(--faint);
+  font-size:10.5px;
+}
+
+/* ============================================================
    SHORTCUTS
 ============================================================ */
 
@@ -3121,7 +3306,7 @@ html.birthday-override body{
       </button>
 
       <button class="action" id="themeToggle">
-        Themes
+        Themes<span id="themeLockBadge" class="lock-badge hidden">🔒</span>
       </button>
 
       <button class="action" id="shortcutButton">
@@ -3265,6 +3450,19 @@ html.birthday-override body{
     BART
   </button>
 
+  <button class="theme-button hidden" id="birthdayThemeButton" data-theme="birthday">
+    🎂
+  </button>
+
+</div>
+
+<!-- ============================================================
+     BIRTHDAY EVENT FX (Sept 28)
+============================================================ -->
+
+<div id="birthdayFx" class="birthday-fx hidden" aria-hidden="true">
+  <div id="confettiLayer"></div>
+  <div id="balloonLayer"></div>
 </div>
 
 <!-- ============================================================
@@ -3511,6 +3709,45 @@ html.birthday-override body{
     <div class="launch-progress">
       <span></span>
     </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================================
+     BIRTHDAY GIFT MODAL (Sept 28)
+============================================================ -->
+
+<div id="birthdayModal" class="modal">
+
+  <div class="modal-card birthday-card">
+
+    <button id="birthdayClose" class="modal-close">
+      ×
+    </button>
+
+    <div class="birthday-emoji">🎉🎂🎈</div>
+
+    <div class="modal-kicker">Special Event</div>
+
+    <h2 class="modal-title">It's my birthday!</h2>
+
+    <p class="birthday-sub">
+      Here's a gift, just for today.
+    </p>
+
+    <ul class="birthday-gift-list">
+      <li>🎈 Keep the birthday theme, forever</li>
+      <li>🔑 A permanent access code: <b>175638</b></li>
+    </ul>
+
+    <button id="claimGiftButton" class="claim-button">
+      Claim my gift
+    </button>
+
+    <p class="birthday-note">
+      Only available today — miss it and it's gone for good.
+    </p>
 
   </div>
 
@@ -4001,6 +4238,34 @@ const games = [
 const SECRET_15_PASSWORD = "unemployed";
 const IDEA_FORM = "https://forms.gle/rNUFYRVaEEqLbyeQ7";
 
+/* ============================================================
+   BIRTHDAY EVENT (Sept 28)
+============================================================ */
+
+function isBirthdayEvent(){
+
+  const now = new Date();
+
+  return now.getMonth() === 8 && now.getDate() === 28;
+
+}
+
+function birthdayGiftClaimed(){
+  return localStorage.getItem("birthdayGiftClaimed") === "1";
+}
+
+function birthdayThemeUnlocked(){
+  return localStorage.getItem("birthdayThemeUnlocked") === "1";
+}
+
+function birthdayCodeUnlocked(){
+  return localStorage.getItem("birthdayCodeUnlocked") === "1";
+}
+
+function birthdayThemeAvailable(){
+  return isBirthdayEvent() || birthdayThemeUnlocked();
+}
+
 function getMondayWeekId(now){
 
   const d = new Date(Date.UTC(
@@ -4282,6 +4547,20 @@ const themes = {
     accent:"#7cc43a",
     accentText:"#121410",
     glow:"rgba(66,184,224,.16)"
+  },
+
+  birthday:{
+    bg:"#1a0f24",
+    surface:"#241432",
+    surfaceHover:"#2f1a40",
+    line:"#4a2a63",
+    lineHover:"#7a3f9e",
+    text:"#fff0fb",
+    muted:"#d9a8e8",
+    faint:"#a071b8",
+    accent:"#ff5fa2",
+    accentText:"#1a0f24",
+    glow:"rgba(255,95,162,.22)"
   }
 
 };
@@ -4335,6 +4614,113 @@ function setTheme(name){
 
     });
 
+  const fx = $("birthdayFx");
+
+  if(fx) fx.classList.toggle("hidden",name !== "birthday");
+
+}
+
+/* ============================================================
+   BIRTHDAY EVENT UI
+============================================================ */
+
+function refreshBirthdayThemeButton(){
+
+  const btn = $("birthdayThemeButton");
+
+  if(!btn) return;
+
+  btn.classList.toggle("hidden",!birthdayThemeAvailable());
+
+}
+
+function refreshThemeLockUI(){
+
+  const locked = isBirthdayEvent();
+  const toggle = $("themeToggle");
+  const badge = $("themeLockBadge");
+
+  if(!toggle) return;
+
+  toggle.classList.toggle("locked",locked);
+
+  if(badge) badge.classList.toggle("hidden",!locked);
+
+  if(locked) $("themePanel").classList.add("hidden");
+
+}
+
+function applyBirthdayForceTheme(){
+
+  if(isBirthdayEvent()){
+
+    setTheme("birthday");
+
+  }else if(
+    localStorage.getItem("gameTheme") === "birthday" &&
+    !birthdayThemeUnlocked()
+  ){
+
+    setTheme("midnight");
+
+  }
+
+}
+
+let birthdayPopupOffered = false;
+
+function maybeShowBirthdayGift(){
+
+  if(!isBirthdayEvent()) return;
+  if(birthdayGiftClaimed()) return;
+  if(birthdayPopupOffered) return;
+
+  birthdayPopupOffered = true;
+
+  openModal("birthdayModal");
+
+}
+
+function buildBirthdayFx(){
+
+  const confettiLayer = $("confettiLayer");
+  const balloonLayer = $("balloonLayer");
+
+  if(!confettiLayer || !balloonLayer) return;
+  if(confettiLayer.childElementCount) return;
+
+  const colors = ["#ff5fa2","#ffb26b","#7cc4ff","#b689ff","#8be08b","#fff17a"];
+
+  for(let i = 0; i < 34; i++){
+
+    const p = document.createElement("div");
+
+    p.className = "confetti-piece";
+    p.style.left = (Math.random() * 100) + "%";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDuration = (5 + Math.random() * 4.5) + "s";
+    p.style.animationDelay = (Math.random() * 6) + "s";
+    p.style.borderRadius = Math.random() < .5 ? "50%" : "2px";
+
+    confettiLayer.appendChild(p);
+
+  }
+
+  for(let i = 0; i < 7; i++){
+
+    const b = document.createElement("div");
+
+    b.className = "balloon";
+    b.style.left = (6 + i * 13 + Math.random() * 6) + "%";
+    b.style.color = colors[i % colors.length];
+    b.style.background = colors[i % colors.length];
+    b.style.animationDuration = (12 + Math.random() * 6) + "s";
+    b.style.animationDelay = (Math.random() * 8) + "s";
+
+    balloonLayer.appendChild(b);
+
+  }
+
 }
 
 /* ============================================================
@@ -4351,6 +4737,9 @@ function showHub(){
 
   startChaosEvents();
 
+  refreshThemeLockUI();
+  refreshBirthdayThemeButton();
+
 }
 
 function showLogin(){
@@ -4364,6 +4753,8 @@ function showLogin(){
   error.classList.remove("visible");
 
   password.focus();
+
+  maybeShowBirthdayGift();
 
 }
 
@@ -4425,7 +4816,7 @@ loginForm.onsubmit = e => {
   }
 
   
-if(entered === "175638"){
+if(entered === "175638" && birthdayCodeUnlocked()){
   sessionStorage.setItem(
     "gameHubUnlocked",
     "1"
@@ -4972,6 +5363,8 @@ $("randomButton").onclick = () => {
 
 $("themeToggle").onclick = () => {
 
+  if(isBirthdayEvent()) return;
+
   $("themePanel")
     .classList.toggle(
       "hidden"
@@ -4985,6 +5378,8 @@ document
 
     button.onclick = () => {
 
+      if(isBirthdayEvent()) return;
+
       setTheme(
         button.dataset.theme
       );
@@ -4992,6 +5387,34 @@ document
     };
 
   });
+
+$("birthdayClose").onclick =
+  () => closeModal("birthdayModal");
+
+$("birthdayModal").onclick = e => {
+
+  if(e.target === $("birthdayModal")){
+
+    closeModal("birthdayModal");
+
+  }
+
+};
+
+$("claimGiftButton").onclick = () => {
+
+  localStorage.setItem("birthdayThemeUnlocked","1");
+  localStorage.setItem("birthdayCodeUnlocked","1");
+  localStorage.setItem("birthdayGiftClaimed","1");
+
+  refreshBirthdayThemeButton();
+
+  $("claimGiftButton").textContent = "Claimed! 🎁";
+  $("claimGiftButton").disabled = true;
+
+  setTimeout(() => closeModal("birthdayModal"),900);
+
+};
 
 $("shortcutButton").onclick =
   () => openModal("shortcuts");
@@ -5632,11 +6055,17 @@ document.addEventListener(
    INITIALIZE
 ============================================================ */
 
+buildBirthdayFx();
+refreshBirthdayThemeButton();
+refreshThemeLockUI();
+
 setTheme(
   localStorage.getItem(
     "gameTheme"
   ) || "midnight"
 );
+
+applyBirthdayForceTheme();
 
 if(
   sessionStorage.getItem(
@@ -5651,6 +6080,16 @@ if(
   showLogin();
 
 }
+
+/* keep the event in sync if the tab is left open across midnight */
+
+setInterval(() => {
+
+  refreshThemeLockUI();
+  refreshBirthdayThemeButton();
+  applyBirthdayForceTheme();
+
+},60000);
 
 /* ============================================================
    RANDOM CHAOS EVENTS
@@ -10172,7 +10611,7 @@ function startFight(kind){
 
   if(!wasUnlocked) showHub();
 
-  ["gameModal","boredModal","shortcuts","secretModal","secret15Modal"]
+  ["gameModal","boredModal","shortcuts","secretModal","secret15Modal","birthdayModal"]
     .forEach(id => $(id).classList.remove("open"));
 
   $("themePanel").classList.add("hidden");
