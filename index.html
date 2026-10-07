@@ -225,6 +225,38 @@ input:focus{
   opacity:1;
 }
 
+.forgot-link{
+  position:absolute;
+  right:18px;
+  bottom:16px;
+  z-index:3;
+  padding:6px 4px;
+  border:0;
+  background:transparent;
+  color:var(--faint);
+  font-size:11px;
+  cursor:pointer;
+  transition:color .2s ease;
+}
+
+.forgot-link:hover{
+  color:var(--muted);
+}
+
+.forgot-card{
+  width:min(360px,100%);
+  text-align:center;
+}
+
+.forgot-card .modal-title{
+  margin-top:0;
+}
+
+.forgot-card .secret-text{
+  font-size:13px;
+  margin:0;
+}
+
 /* ============================================================
    HUB
 ============================================================ */
@@ -3280,6 +3312,10 @@ html.birthday-override body{
 
   </div>
 
+  <button type="button" id="forgotLink" class="forgot-link">
+    forgot code?
+  </button>
+
 </div>
 
 <!-- ============================================================
@@ -3835,6 +3871,28 @@ html.birthday-override body{
     >
       BACK
     </button>
+
+  </div>
+
+</div>
+
+<!-- ============================================================
+     FORGOT CODE
+============================================================ -->
+
+<div id="forgotModal" class="modal">
+
+  <div class="modal-card forgot-card">
+
+    <button id="forgotClose" class="modal-close">
+      ×
+    </button>
+
+    <h2 class="modal-title">too bad</h2>
+
+    <p class="secret-text">
+      it changes every monday, ask me, i might know
+    </p>
 
   </div>
 
@@ -5959,6 +6017,26 @@ $("secretModal").onclick = e => {
 };
 
 /* ============================================================
+   FORGOT CODE POPUP
+============================================================ */
+
+$("forgotLink").onclick =
+  () => openModal("forgotModal");
+
+$("forgotClose").onclick =
+  () => closeModal("forgotModal");
+
+$("forgotModal").onclick = e => {
+
+  if(e.target === $("forgotModal")){
+
+    closeModal("forgotModal");
+
+  }
+
+};
+
+/* ============================================================
    SECRET 15 CLOSE
 ============================================================ */
 
@@ -6000,6 +6078,10 @@ document.addEventListener(
 
       closeModal(
         "secret15Modal"
+      );
+
+      closeModal(
+        "forgotModal"
       );
 
       $("themePanel")
