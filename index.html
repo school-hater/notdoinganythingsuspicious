@@ -1271,6 +1271,49 @@ html[data-theme="holger"] input:focus{
   color:#e8d9b0;
 }
 
+
+/* ============================================================
+   ONE-TIME WEEKLY CODE PEEK
+============================================================ */
+
+.code-peek{
+  position:fixed;
+  inset:0;
+  z-index:6000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:14px;
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  text-align:center;
+  animation:codePeekIn .35s ease-out;
+}
+
+.code-peek small{
+  font-size:14px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  opacity:.7;
+}
+
+.code-peek strong{
+  font-size:clamp(40px,12vw,110px);
+  letter-spacing:.12em;
+  font-variant-numeric:tabular-nums;
+}
+
+.code-peek span{
+  font-size:13px;
+  opacity:.55;
+}
+
+@keyframes codePeekIn{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+
 /* ============================================================
    "GIVE ME IDEAS" RANDOM EVENT (1 in 5 on unlock)
 ============================================================ */
@@ -14644,6 +14687,43 @@ search.addEventListener("input",() => {
 
 </script>
 <!-- ===== CC BUILD v2 COMPLETE — END OF THE CORRUPTED CURSOR ===== -->
+
+
+<script>
+/* One-time weekly code peek: each browser sees the current code once per week */
+(function(){
+
+  const KEY = "weeklyCodePeekSeen";
+  let week;
+
+  try{
+    week = getMondayWeekId(new Date());
+    if(localStorage.getItem(KEY) === week) return;
+    /* mark as seen immediately so it can never show twice */
+    localStorage.setItem(KEY,week);
+  }catch(e){
+    return;
+  }
+
+  const el = document.createElement("div");
+  el.className = "code-peek";
+  el.innerHTML =
+    "<small>This week's code</small>" +
+    "<strong></strong>" +
+    "<span>You only get to see this once each week, remember the code please. Click anywhere to close.</span>";
+  el.querySelector("strong").textContent = getWeeklyAccessCode();
+
+  function close(){
+    el.remove();
+    document.removeEventListener("keydown",close);
+  }
+
+  el.addEventListener("click",close);
+  document.addEventListener("keydown",close);
+  document.body.appendChild(el);
+
+})();
+</script>
 
 </body>
 </html>
