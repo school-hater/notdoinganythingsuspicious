@@ -14710,16 +14710,30 @@ search.addEventListener("input",() => {
   el.innerHTML =
     "<small>This week's code</small>" +
     "<strong></strong>" +
-    "<span>You only get to see this once each week, remember the code please. Click anywhere to close.</span>";
+    "<span></span>";
   el.querySelector("strong").textContent = getWeeklyAccessCode();
 
-  function close(){
-    el.remove();
-    document.removeEventListener("keydown",close);
+  const hint = el.querySelector("span");
+  let clicksLeft = 3;
+
+  function updateHint(){
+    hint.textContent =
+      "You only get to see this once, please remember the code. Click anywhere " +
+      clicksLeft + " more time" + (clicksLeft === 1 ? "" : "s") +
+      " to close.";
   }
 
-  el.addEventListener("click",close);
-  document.addEventListener("keydown",close);
+  updateHint();
+
+  el.addEventListener("click",() => {
+    clicksLeft--;
+    if(clicksLeft <= 0){
+      el.remove();
+      return;
+    }
+    updateHint();
+  });
+
   document.body.appendChild(el);
 
 })();
